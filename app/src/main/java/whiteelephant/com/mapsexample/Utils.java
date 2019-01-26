@@ -9,7 +9,12 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * Created by prem on 15/07/2017.
@@ -106,13 +111,20 @@ public class Utils {
     }
 
     /**
-     * calculate distance between 2 positions using coordinates(LatLng)
+     * calculate distance between 2 positions using coordinates string(LatLng)
      *
-     * @param lat1,lat2,lng1,lng2
+     * @param from_LatLng,to_LatLng
      * @return distance
      */
 
-    public static Double coordinatesToDistance(Double lat1,Double lat2,Double lng1,Double lng2){
+    public static Double coordinatesToDistance(String from_LatLng,String to_LatLng){
+        String[] fromArray = from_LatLng.split(",");
+        String[] toArray = to_LatLng.split(",");
+        Double lat1 = Double.valueOf(fromArray[0]);
+        Double lng1 = Double.valueOf(fromArray[1]);
+        Double lat2 = Double.valueOf(toArray[0]);
+        Double lng2 = Double.valueOf(toArray[1]);
+
         final Double Radius = 6378.137;
         Double dLat = (lat2 - lat1) * Math.PI / 180;
         Double dLng = (lng2 - lng1) * Math.PI / 180;
@@ -123,4 +135,33 @@ public class Utils {
         Double distance = Radius * c;
         return distance;
     }
+
+//    public static ArrayList<IDAndLatLng> readIDCoordinate(String path){
+//        ArrayList<IDAndLatLng> idArray = new ArrayList<>();
+//        File file = new File(path);
+//        if (!file.exists()) {
+//            file.mkdirs();
+//        }
+//        FileInputStream fiStream;
+//        Scanner scanner;
+//
+//        try{
+//            fiStream = new FileInputStream(file);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//        }catch (NumberFormatException e){
+//            e.printStackTrace();
+//        }catch (FileNotFoundException e){
+//            e.printStackTrace();
+//        }
+//
+//    }
+
 }

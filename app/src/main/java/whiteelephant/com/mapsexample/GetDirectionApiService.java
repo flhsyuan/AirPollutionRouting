@@ -68,8 +68,13 @@ public class GetDirectionApiService extends IntentService {
 
             final String origin = fromLat + ", " + fromLng;
             String destination = toLat + ", " + toLng;
+
             Log.d(TAG, "origin =  " + origin + ", destination : " + destination + ", APIKey : " + apiKey);
 
+            //TODO
+            // 1.对于起点和终点，各自找到距离最近的cross点坐标
+            // 2.找到的cross用AStar,找到必经的cross
+            // 3.把必经的cross加入到waypoints里面
             if (fromLat != 0.0 && fromLng != 0.0 && toLat != 0.0 && toLng != 0.0 && apiKey != null) {
                 Retrofit retrofit = new Retrofit.Builder().baseUrl("https://maps.googleapis.com")
                         .addConverterFactory(GsonConverterFactory.create()).build();
