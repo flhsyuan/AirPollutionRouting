@@ -136,8 +136,8 @@ public class Utils {
         return distance;
     }
 
-//    public static ArrayList<IDAndLatLng> readIDCoordinate(String path){
-//        ArrayList<IDAndLatLng> idArray = new ArrayList<>();
+//    public static ArrayList<Cross> readIDCoordinate(String path){
+//        ArrayList<Cross> idArray = new ArrayList<>();
 //        File file = new File(path);
 //        if (!file.exists()) {
 //            file.mkdirs();

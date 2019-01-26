@@ -2,12 +2,15 @@ package whiteelephant.com.mapsexample;
 
 import com.google.android.gms.maps.model.LatLng;
 
-public class IDAndLatLng {
+public class Cross {
     private int id;
     private String LatLng;
 
+    public Cross(int id) {
+        this.id = id;
+    }
 
-    public IDAndLatLng(int id, String latLng) {
+    public Cross(int id, String latLng) {
         this.id = id;
         LatLng = latLng;
     }
