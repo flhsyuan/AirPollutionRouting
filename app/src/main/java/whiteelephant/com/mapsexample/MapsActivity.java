@@ -115,6 +115,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         BusProvider.getInstance().register(this);
+
     }
 
     private void setupUI() {

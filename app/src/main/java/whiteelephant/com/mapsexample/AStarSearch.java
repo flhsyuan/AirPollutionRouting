@@ -7,12 +7,21 @@ import java.util.Map;
 
 public class AStarSearch {
 
-    private ArrayList<Road> allRoads = new ArrayList<>();
 
     private HashMap<String, Double> frontier = new HashMap<>();
     private HashMap<String, Double> costSoFar = new HashMap<>();
     private HashMap<String, String> cameFrom = new HashMap<>();
     private ArrayList<String> exploredNodes = new ArrayList<>();
+
+    private ArrayList<Road> allRoads;
+
+    public AStarSearch(ArrayList<Road> allRoads){
+        this.allRoads = allRoads;
+//        for (Road road: allRoads){
+//            System.out.println(road.getDistance());
+//            System.out.println(road.getPollutionIndex());
+//        }
+    }
 
     public ArrayList<String> findpath(String start, String goal){
 
@@ -33,18 +42,19 @@ public class AStarSearch {
 
             for (Road road: successors){
                 String successor;
-                if (road.getCrossId1().equals(current)){
-                    successor = road.getCrossId2();
+                if (road.getFromCrossID().equals(current)){
+                    successor = road.getToCrossID();
                 }
                 else{
-                    successor = road.getCrossId1();
+                    successor = road.getFromCrossID();
                 }
 
                 if (exploredNodes.contains(successor)) {
                     continue;
                 }
 
-                double cost = road.getDistance() * road.getAvgPollution();
+
+                double cost = 1 * road.getPollutionIndex();
                 double newCost = costSoFar.get(current) + cost;
 
                 if(costSoFar.containsKey(successor)){
@@ -70,7 +80,7 @@ public class AStarSearch {
 
         ArrayList<Road> successors = new ArrayList<>();
         for(Road road: allRoads) {
-            if (road.getCrossId1().equals(current)||road.getCrossId2().equals(current)){
+            if (road.getFromCrossID().equals(current)||road.getToCrossID().equals(current)){
                 successors.add(road);
             }
         }
@@ -79,11 +89,11 @@ public class AStarSearch {
     }
 
     private String getNextNodeToExpand() {
-        int min=Integer.MAX_VALUE;
+        double min=Double.MAX_VALUE;
         String key = null;
         for(Map.Entry entry: frontier.entrySet()){
-            if((int)entry.getValue() < min){
-                min = (int) entry.getValue();
+            if((double)entry.getValue() < min){
+                min = (double) entry.getValue();
                 key = (String) entry.getKey();
             }
         }
