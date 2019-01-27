@@ -2,25 +2,30 @@ package whiteelephant.com.mapsexample;
 
 import okhttp3.internal.Util;
 
+import static whiteelephant.com.mapsexample.Utils.coordinatesToDistance;
+
 public class Road {
 
     private String fromCrossID;
     private String ToCrossID;
-    private String fromLatlng;
-    private String toLatlng;
+    private Double fromLat;
+    private Double fromLng;
+    private Double toLat;
+    private Double toLng;
     private Double pollutionIndex;
     private Double distance;
 
 
-    public Road(String fromCrossID, String toCrossID,
-                String fromLatlng, String toLatlng,
-                Double pollutionIndex) {
+    public Road(String fromCrossID, String toCrossID, Double fromLat, Double fromLng, Double toLat, Double toLng, Double pollutionIndex) {
         this.fromCrossID = fromCrossID;
         ToCrossID = toCrossID;
-        this.fromLatlng = fromLatlng;
-        this.toLatlng = toLatlng;
+        this.fromLat = fromLat;
+        this.fromLng = fromLng;
+        this.toLat = toLat;
+        this.toLng = toLng;
         this.pollutionIndex = pollutionIndex;
-        this.distance = Utils.coordinatesToDistance(fromLatlng,toLatlng);
+
+        this.distance=coordinatesToDistance(fromLat,fromLng,toLat,toLng);
     }
 
     public Road() {
@@ -43,20 +48,36 @@ public class Road {
         ToCrossID = toCrossID;
     }
 
-    public String getFromLatlng() {
-        return fromLatlng;
+    public Double getFromLat() {
+        return fromLat;
     }
 
-    public void setFromLatlng(String fromLatlng) {
-        this.fromLatlng = fromLatlng;
+    public void setFromLat(Double fromLat) {
+        this.fromLat = fromLat;
     }
 
-    public String getToLatlng() {
-        return toLatlng;
+    public Double getFromLng() {
+        return fromLng;
     }
 
-    public void setToLatlng(String toLatlng) {
-        this.toLatlng = toLatlng;
+    public void setFromLng(Double fromLng) {
+        this.fromLng = fromLng;
+    }
+
+    public Double getToLat() {
+        return toLat;
+    }
+
+    public void setToLat(Double toLat) {
+        this.toLat = toLat;
+    }
+
+    public Double getToLng() {
+        return toLng;
+    }
+
+    public void setToLng(Double toLng) {
+        this.toLng = toLng;
     }
 
     public Double getPollutionIndex() {
@@ -80,12 +101,12 @@ public class Road {
         return "Road{" +
                 "fromCrossID='" + fromCrossID + '\'' +
                 ", ToCrossID='" + ToCrossID + '\'' +
-                ", fromLatlng='" + fromLatlng + '\'' +
-                ", toLatlng='" + toLatlng + '\'' +
+                ", fromLat=" + fromLat +
+                ", fromLng=" + fromLng +
+                ", toLat=" + toLat +
+                ", toLng=" + toLng +
                 ", pollutionIndex=" + pollutionIndex +
                 ", distance=" + distance +
                 '}';
     }
-
-
 }
