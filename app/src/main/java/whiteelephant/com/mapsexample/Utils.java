@@ -143,5 +143,21 @@ public class Utils {
     }
 
 
+    public static Double coordinatesToDistance(Double fromLat, Double fromLng, Double toLat, Double toLng){
+        Double lat1 = fromLat;
+        Double lng1 = fromLng;
+        Double lat2 = toLat;
+        Double lng2 = toLng;
+
+        final Double Radius = 6378.137;
+        Double dLat = (lat2 - lat1) * Math.PI / 180;
+        Double dLng = (lng2 - lng1) * Math.PI / 180;
+        Double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                        Math.sin(dLng/2) * Math.sin(dLng/2);
+        Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        Double distance = Radius * c;
+        return distance;
+    }
 
 }

@@ -53,7 +53,6 @@ public class GetDirectionApiService extends IntentService {
         BusProvider.getInstance().register(this);
     }
 
-    //TODO 加上mode，waypoints
     public GetDirectionApiService() {
         super("GetDirectionApiService");
     }
@@ -84,7 +83,7 @@ public class GetDirectionApiService extends IntentService {
 
             Log.d(TAG, "origin =  " + origin + ", destination : " + destination + ", APIKey : " + apiKey);
 
-            List<String> nearest2Crosses = getNearestCross(origin);
+            List<String> nearest2Crosses = getNearestCross(fromLat,fromLng);
             Log.d(TAG, "onHandleIntent: the 2 points are "+nearest2Crosses);
 
             //TODO
@@ -190,8 +189,10 @@ public class GetDirectionApiService extends IntentService {
                 Road obj = new Road();
                 obj.setFromCrossID(st.nextToken());
                 obj.setToCrossID(st.nextToken());
-                obj.setFromLatlng(st.nextToken());
-                obj.setToLatlng(st.nextToken());
+                obj.setFromLat(Double.valueOf(st.nextToken()));
+                obj.setFromLng(Double.valueOf(st.nextToken()));
+                obj.setToLat(Double.valueOf(st.nextToken()));
+                obj.setToLng(Double.valueOf(st.nextToken()));
                 obj.setPollutionIndex(Double.valueOf(st.nextToken()));
                 roadArray.add(obj);
             }
@@ -207,43 +208,53 @@ public class GetDirectionApiService extends IntentService {
      * return 2 nearest cross to the given position
      */
 
-    public ArrayList<String> getNearestCross(String origin){
+    public ArrayList<String> getNearestCross(Double originLat, Double originLng){
         ArrayList<String> nearestCrosses = new ArrayList<>();
-        ArrayList<Cross> crosses = readCrossCSV();
-        Map<String,Double> map = new HashMap<>();
+        ArrayList<Road> roads = readPollutionCSV();
 
-        Log.d(TAG, "onHandleIntent: successfully read the csvs ");
-
-        // get the map key:latlng value:distance
-        for(Cross cross:crosses){
-            String latlng = cross.getLatLng();
-            //get the revised origin
-            String revisedOrigin = origin.replace(",","_");
-            Double distance = Utils.coordinatesToDistance(latlng,revisedOrigin);
-            map.put(latlng,distance);
-            Log.d(TAG, "getNearestCross: the distance is "+distance);
-        }
-
-        // sort the map and get the 2 nearest latlng
-        List<Map.Entry<String, Double>> list = new ArrayList<>(map.entrySet());
-        Collections.sort(list, new Comparator<Map.Entry<String, Double>>() {
-            @Override
-            public int compare(Map.Entry<String, Double> o1, Map.Entry<String, Double> o2) {
-                return o1.getValue().compareTo(o2.getValue());   //ascending
-//                return o2.getValue().compareTo(o1.getValue()); //descending
+        for(Road road: roads){
+            int retval1 = road.getFromLat().compareTo(originLat); //>0
+            int retval2 = road.getFromLng().compareTo(originLng); //<0
+            int retval3 = road.getFromLat().compareTo(originLat); //<0
+            int retval4 = road.getFromLat().compareTo(originLat); //>0
+            if ( retval1>0 && retval2<0 && retval3<0 && retval4>0){
+                Log.d(TAG, "getNearestCross: the lat and lng is "+ road.getFromLat()+" "+road.getFromLng()+" the to latlng is "+road.getToLat()+""+road.getToLng());
+                nearestCrosses.add(road.getFromCrossID());
+                nearestCrosses.add(road.getToCrossID());
             }
-        });
-        Log.d(TAG, "getNearestCross: the list is "+list.toString());
-
-
-        for(int i=0;i<2;i++){
-            Map.Entry<String, Double> obj = list.get(i);
-            String latlng = obj.getKey();
-            String revisedLatlng = latlng.replace("_",",");
-            nearestCrosses.add(obj.getKey());
-
         }
 
+//        Map<String,Double> map = new HashMap<>();
+//
+//        Log.d(TAG, "onHandleIntent: successfully read the csvs ");
+//
+//        // get the map key:latlng value:distance
+//        for(Cross cross:crosses){
+//        String latlng = cross.getLatLng();
+//        //get the revised origin
+//        String revisedOrigin = origin.replace(",","_");
+//            Double distance = Utils.coordinatesToDistance(latlng,revisedOrigin);
+//            map.put(latlng,distance);
+//            Log.d(TAG, "getNearestCross: the distance is "+distance);
+//        }
+//
+//        // sort the map and get the 2 nearest latlng
+//        List<Map.Entry<String, Double>> list = new ArrayList<>(map.entrySet());
+//        Collections.sort(list, new Comparator<Map.Entry<String, Double>>() {
+//            @Override
+//            public int compare(Map.Entry<String, Double> o1, Map.Entry<String, Double> o2) {
+//                return o1.getValue().compareTo(o2.getValue());   //ascending
+//            }
+//        });
+//        Log.d(TAG, "getNearestCross: the list is "+list.toString());
+//
+//
+//        for(int i=0;i<2;i++){
+//            Map.Entry<String, Double> obj = list.get(i);
+//            String latlng = obj.getKey();
+//            String revisedLatlng = latlng.replace("_",",");
+//            nearestCrosses.add(obj.getKey());
+//        }
         return nearestCrosses;
     }
 
