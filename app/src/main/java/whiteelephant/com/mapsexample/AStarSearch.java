@@ -9,12 +9,12 @@ public class AStarSearch {
 
     private ArrayList<Road> allRoads = new ArrayList<>();
 
-    private HashMap<Integer, Double> frontier = new HashMap<>();
-    private HashMap<Integer, Double> costSoFar = new HashMap<>();
-    private HashMap<Integer, Integer> cameFrom = new HashMap<>();
-    private ArrayList<Integer> exploredNodes = new ArrayList<>();
+    private HashMap<String, Double> frontier = new HashMap<>();
+    private HashMap<String, Double> costSoFar = new HashMap<>();
+    private HashMap<String, String> cameFrom = new HashMap<>();
+    private ArrayList<String> exploredNodes = new ArrayList<>();
 
-    public ArrayList<Integer> findpath(int start, int goal){
+    public ArrayList<String> findpath(String start, String goal){
 
         frontier.clear();
         costSoFar.clear();
@@ -25,15 +25,15 @@ public class AStarSearch {
         costSoFar.put(start, 0.0);
 
         while (frontier.size() > 0) {
-            int current = getNextNodeToExpand();
-            if (current == goal) return drawPath(current);
+            String current = getNextNodeToExpand();
+            if (current.equals(goal)) return drawPath(current);
             frontier.remove(current);
             exploredNodes.add(current);
             ArrayList<Road> successors = getSuccessors(current);
 
             for (Road road: successors){
-                int successor;
-                if (road.getCrossId1() == current){
+                String successor;
+                if (road.getCrossId1().equals(current)){
                     successor = road.getCrossId2();
                 }
                 else{
@@ -66,11 +66,11 @@ public class AStarSearch {
         return null;
     }
 
-    private ArrayList<Road> getSuccessors(int currentId) {
+    private ArrayList<Road> getSuccessors(String current) {
 
         ArrayList<Road> successors = new ArrayList<>();
         for(Road road: allRoads) {
-            if (road.getCrossId1() == currentId||road.getCrossId2() == currentId){
+            if (road.getCrossId1().equals(current)||road.getCrossId2().equals(current)){
                 successors.add(road);
             }
         }
@@ -78,20 +78,20 @@ public class AStarSearch {
         return successors;
     }
 
-    private int getNextNodeToExpand() {
+    private String getNextNodeToExpand() {
         int min=Integer.MAX_VALUE;
-        Integer key = null;
+        String key = null;
         for(Map.Entry entry: frontier.entrySet()){
             if((int)entry.getValue() < min){
                 min = (int) entry.getValue();
-                key = (Integer) entry.getKey();
+                key = (String) entry.getKey();
             }
         }
         return key;
     }
 
-    private ArrayList<Integer> drawPath(int current) {
-        ArrayList<Integer> path = new ArrayList<>();
+    private ArrayList<String> drawPath(String current) {
+        ArrayList<String> path = new ArrayList<>();
         path.add(current);
         while (cameFrom.containsKey(current)) {
             current = cameFrom.get(current);
