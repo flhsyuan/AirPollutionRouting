@@ -17,10 +17,6 @@ public class AStarSearch {
 
     public AStarSearch(ArrayList<Road> allRoads){
         this.allRoads = allRoads;
-//        for (Road road: allRoads){
-//            System.out.println(road.getDistance());
-//            System.out.println(road.getPollutionIndex());
-//        }
     }
 
     public ArrayList<String> findpath(String start, String goal){
@@ -54,7 +50,7 @@ public class AStarSearch {
                 }
 
 
-                double cost = 1 * road.getPollutionIndex();
+                double cost = road.getDistance() * road.getPollutionIndex();
                 double newCost = costSoFar.get(current) + cost;
 
                 if(costSoFar.containsKey(successor)){
