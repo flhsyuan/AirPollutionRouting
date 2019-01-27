@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,9 +13,13 @@ import android.util.Log;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by prem on 15/07/2017.
@@ -112,14 +117,15 @@ public class Utils {
 
     /**
      * calculate distance between 2 positions using coordinates string(LatLng)
+     * Attention: there is a "_" between lat and lng.
      *
      * @param from_LatLng,to_LatLng
      * @return distance
      */
 
     public static Double coordinatesToDistance(String from_LatLng,String to_LatLng){
-        String[] fromArray = from_LatLng.split(",");
-        String[] toArray = to_LatLng.split(",");
+        String[] fromArray = from_LatLng.split("_");
+        String[] toArray = to_LatLng.split("_");
         Double lat1 = Double.valueOf(fromArray[0]);
         Double lng1 = Double.valueOf(fromArray[1]);
         Double lat2 = Double.valueOf(toArray[0]);
@@ -136,32 +142,6 @@ public class Utils {
         return distance;
     }
 
-//    public static ArrayList<Cross> readIDCoordinate(String path){
-//        ArrayList<Cross> idArray = new ArrayList<>();
-//        File file = new File(path);
-//        if (!file.exists()) {
-//            file.mkdirs();
-//        }
-//        FileInputStream fiStream;
-//        Scanner scanner;
-//
-//        try{
-//            fiStream = new FileInputStream(file);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//        }catch (NumberFormatException e){
-//            e.printStackTrace();
-//        }catch (FileNotFoundException e){
-//            e.printStackTrace();
-//        }
-//
-//    }
+
 
 }

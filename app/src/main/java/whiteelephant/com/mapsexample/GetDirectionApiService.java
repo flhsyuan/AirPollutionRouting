@@ -3,12 +3,25 @@ package whiteelephant.com.mapsexample;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Path;
+import android.content.res.AssetManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -71,6 +84,9 @@ public class GetDirectionApiService extends IntentService {
 
             Log.d(TAG, "origin =  " + origin + ", destination : " + destination + ", APIKey : " + apiKey);
 
+            List<String> nearest2Crosses = getNearestCross(origin);
+            Log.d(TAG, "onHandleIntent: the 2 points are "+nearest2Crosses);
+
             //TODO
             // 1.对于起点和终点，各自找到距离最近的cross点坐标
             // 2.找到的cross用AStar,找到必经的cross
@@ -79,7 +95,8 @@ public class GetDirectionApiService extends IntentService {
                 Retrofit retrofit = new Retrofit.Builder().baseUrl("https://maps.googleapis.com")
                         .addConverterFactory(GsonConverterFactory.create()).build();
                 GetDirectionInterface apiService = retrofit.create(GetDirectionInterface.class);
-                Call<Directions> call = apiService.getDirections(origin, destination, apiKey, "-37.8136,144.9654","walking",false);
+                //TODO the latlng need to be changed
+                Call<Directions> call = apiService.getDirections(origin, destination, apiKey, "-37.8136,144.9654", "walking", false);
                 call.enqueue(new Callback<Directions>() {
                     @Override
                     public void onResponse(Call<Directions> call, Response<Directions> response) {
@@ -106,4 +123,128 @@ public class GetDirectionApiService extends IntentService {
 
         BusProvider.getInstance().unregister(this);
     }
+
+
+
+
+
+    /**
+     * Read the cross csv which contains latlngs of crosses.
+     * @return ArrayList<Cross>
+     */
+    public ArrayList<Cross> readCrossCSV() {
+        ArrayList<Cross> crossArray = new ArrayList<>();
+        InputStream is = null;
+        AssetManager assetManager = getBaseContext().getAssets();
+        try {
+            is = assetManager.open("cross.csv");
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.d(TAG, "readCrossCSV: failed to read cross");
+        }
+
+        BufferedReader reader = null;
+        reader = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+
+        String line = "";
+        StringTokenizer st = null;
+        try {
+
+            while ((line = reader.readLine()) != null) {
+                st = new StringTokenizer(line, ",");
+                Cross obj = new Cross();
+                obj.setId(st.nextToken());
+                obj.setLatLng(st.nextToken().replace("\"",""));
+                crossArray.add(obj);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return crossArray;
+    }
+
+    /**
+     * Read the pollution csv.
+     * @return ArrayList<Road>
+     */
+    public ArrayList<Road> readPollutionCSV() {
+        ArrayList<Road> roadArray = new ArrayList<>();
+        InputStream is = null;
+        AssetManager assetManager = getBaseContext().getAssets();
+        try {
+            is = assetManager.open("pollution.csv");
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.d(TAG, "readCSV: failed to read pollution");
+        }
+
+        BufferedReader reader = null;
+        reader = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+
+        String line = "";
+        StringTokenizer st = null;
+        try {
+
+            while ((line = reader.readLine()) != null) {
+                st = new StringTokenizer(line, ",");
+                Road obj = new Road();
+                obj.setFromCrossID(st.nextToken());
+                obj.setToCrossID(st.nextToken());
+                obj.setFromLatlng(st.nextToken());
+                obj.setToLatlng(st.nextToken());
+                obj.setPollutionIndex(Double.valueOf(st.nextToken()));
+                roadArray.add(obj);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return roadArray;
+    }
+
+
+
+    /**
+     * return 2 nearest cross to the given position
+     */
+
+    public ArrayList<String> getNearestCross(String origin){
+        ArrayList<String> nearestCrosses = new ArrayList<>();
+        ArrayList<Cross> crosses = readCrossCSV();
+        Map<String,Double> map = new HashMap<>();
+
+        Log.d(TAG, "onHandleIntent: successfully read the csvs ");
+
+        // get the map key:latlng value:distance
+        for(Cross cross:crosses){
+            String latlng = cross.getLatLng();
+            //get the revised origin
+            String revisedOrigin = origin.replace(",","_");
+            Double distance = Utils.coordinatesToDistance(latlng,revisedOrigin);
+            map.put(latlng,distance);
+            Log.d(TAG, "getNearestCross: the distance is "+distance);
+        }
+
+        // sort the map and get the 2 nearest latlng
+        List<Map.Entry<String, Double>> list = new ArrayList<>(map.entrySet());
+        Collections.sort(list, new Comparator<Map.Entry<String, Double>>() {
+            @Override
+            public int compare(Map.Entry<String, Double> o1, Map.Entry<String, Double> o2) {
+                return o1.getValue().compareTo(o2.getValue());   //ascending
+//                return o2.getValue().compareTo(o1.getValue()); //descending
+            }
+        });
+        Log.d(TAG, "getNearestCross: the list is "+list.toString());
+
+
+        for(int i=0;i<2;i++){
+            Map.Entry<String, Double> obj = list.get(i);
+            String latlng = obj.getKey();
+            String revisedLatlng = latlng.replace("_",",");
+            nearestCrosses.add(obj.getKey());
+
+        }
+
+        return nearestCrosses;
+    }
+
 }

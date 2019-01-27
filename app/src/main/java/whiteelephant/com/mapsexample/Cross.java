@@ -3,23 +3,23 @@ package whiteelephant.com.mapsexample;
 import com.google.android.gms.maps.model.LatLng;
 
 public class Cross {
-    private int id;
+    private String id;
     private String LatLng;
 
-    public Cross(int id) {
-        this.id = id;
-    }
 
-    public Cross(int id, String latLng) {
+    public Cross(String id, String latLng) {
         this.id = id;
         LatLng = latLng;
     }
 
-    public int getId() {
+    public Cross() {
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
