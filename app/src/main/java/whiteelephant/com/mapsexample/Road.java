@@ -24,6 +24,7 @@ public class Road {
     }
 
     public Road() {
+
     }
 
     public String getFromCrossID() {
@@ -85,4 +86,6 @@ public class Road {
                 ", distance=" + distance +
                 '}';
     }
+
+
 }
