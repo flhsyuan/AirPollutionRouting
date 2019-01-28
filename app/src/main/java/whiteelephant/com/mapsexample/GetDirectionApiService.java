@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import javax.xml.transform.dom.DOMLocator;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -95,6 +97,15 @@ public class GetDirectionApiService extends IntentService {
             }
 
 //            Log.d(TAG, "onHandleIntent: the 2 points are "+nearest2Crosses);
+            List<String> nearestRoadofStart = getNearestRoad(fromLat,fromLng);   //yuan
+            List<String> nearestRoadofEnd = getNearestRoad(toLat,toLng);   //yuan
+//            Log.d(TAG, "onHandleIntent: the road of start is  "+nearestRoadofStart+" the start latlng is "+origin);
+//            Log.d(TAG, "onHandleIntent: the road of end is  "+nearestRoadofEnd+" the end latlng is "+destination);
+//            for(String id:nearestRoadofStart){
+//                Log.d(TAG, "onHandleIntent: the latlng is "+idToLatLng(id));
+//            }
+
+
 
             //TODO
             // 1.对于起点和终点，各自找到距离最近的cross点坐标
@@ -223,21 +234,37 @@ public class GetDirectionApiService extends IntentService {
      * return 2 nearest cross to the given position
      */
 
-    public ArrayList<String> getNearestCross(Double originLat, Double originLng){
-        ArrayList<String> nearestCrosses = new ArrayList<>();
+    public ArrayList<String> getNearestRoad(Double originLat, Double originLng){
+        ArrayList<String> nearestRoads = new ArrayList<>();
         ArrayList<Road> roads = readPollutionCSV();
 
-        for(Road road: roads){
-            int retval1 = road.getFromLat().compareTo(originLat); //>0
-            int retval2 = road.getFromLng().compareTo(originLng); //<0
-            int retval3 = road.getFromLat().compareTo(originLat); //<0
-            int retval4 = road.getFromLat().compareTo(originLat); //>0
-            if ( retval1>0 && retval2<0 && retval3<0 && retval4>0){
-                Log.d(TAG, "getNearestCross: the lat and lng is "+ road.getFromLat()+" "+road.getFromLng()+" the to latlng is "+road.getToLat()+""+road.getToLng());
-                nearestCrosses.add(road.getFromCrossID());
-                nearestCrosses.add(road.getToCrossID());
-            }
+        Map<String,Double> map = new HashMap<>();
+
+        for(Road road:roads){
+            String mapKey = road.getFromCrossID()+","+road.getToCrossID();
+            double distance = Utils.pointToLine(road.getFromLat(),road.getFromLng(),
+                    road.getToLat(),road.getToLng(),
+                    originLat,originLng);
+            map.put(mapKey,distance);
         }
+
+        // sort the list
+        List<Map.Entry<String, Double>> list = new ArrayList<>(map.entrySet());
+        Collections.sort(list, new Comparator<Map.Entry<String, Double>>() {
+            @Override
+            public int compare(Map.Entry<String, Double> o1, Map.Entry<String, Double> o2) {
+                return o1.getValue().compareTo(o2.getValue());   //ascending
+            }
+        });
+        Map.Entry<String, Double> obj = list.get(0);
+        String twoNodeNumber = obj.getKey();
+        String[] fromAndTo= twoNodeNumber.split(",");
+        String fromNum = fromAndTo[0];
+        String toNum = fromAndTo[1];
+        nearestRoads.add(fromNum);
+        nearestRoads.add(toNum);
+        return nearestRoads;
+
 
 //        Map<String,Double> map = new HashMap<>();
 //
@@ -270,7 +297,18 @@ public class GetDirectionApiService extends IntentService {
 //            String revisedLatlng = latlng.replace("_",",");
 //            nearestCrosses.add(obj.getKey());
 //        }
-        return nearestCrosses;
+    }
+
+    public String idToLatLng(String id){
+        ArrayList<Cross> crossArray = readCrossCSV();
+        String latLng ="";
+        for (Cross cross:crossArray){
+            if (id.equals(cross.getId())){
+                latLng = cross.getLatLng();
+            }
+        }
+        String revisedlatLng = latLng.replace("_",",");
+        return revisedlatLng;
     }
 
 }
