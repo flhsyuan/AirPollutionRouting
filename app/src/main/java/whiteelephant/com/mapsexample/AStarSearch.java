@@ -51,6 +51,7 @@ public class AStarSearch {
 
 
                 double cost = road.getDistance() * road.getPollutionIndex();
+                System.out.println(cost);
                 double newCost = costSoFar.get(current) + cost;
 
                 if(costSoFar.containsKey(successor)){
