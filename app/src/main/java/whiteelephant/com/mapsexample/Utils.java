@@ -123,24 +123,24 @@ public class Utils {
      * @return distance
      */
 
-    public static Double coordinatesToDistance(String from_LatLng,String to_LatLng){
-        String[] fromArray = from_LatLng.split("_");
-        String[] toArray = to_LatLng.split("_");
-        Double lat1 = Double.valueOf(fromArray[0]);
-        Double lng1 = Double.valueOf(fromArray[1]);
-        Double lat2 = Double.valueOf(toArray[0]);
-        Double lng2 = Double.valueOf(toArray[1]);
-
-        final Double Radius = 6378.137;
-        Double dLat = (lat2 - lat1) * Math.PI / 180;
-        Double dLng = (lng2 - lng1) * Math.PI / 180;
-        Double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                        Math.sin(dLng/2) * Math.sin(dLng/2);
-        Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        Double distance = Radius * c;
-        return distance;
-    }
+//    public static Double coordinatesToDistance(String from_LatLng,String to_LatLng){
+//        String[] fromArray = from_LatLng.split("_");
+//        String[] toArray = to_LatLng.split("_");
+//        Double lat1 = Double.valueOf(fromArray[0]);
+//        Double lng1 = Double.valueOf(fromArray[1]);
+//        Double lat2 = Double.valueOf(toArray[0]);
+//        Double lng2 = Double.valueOf(toArray[1]);
+//
+//        final Double Radius = 6378.137;
+//        Double dLat = (lat2 - lat1) * Math.PI / 180;
+//        Double dLng = (lng2 - lng1) * Math.PI / 180;
+//        Double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+//                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+//                        Math.sin(dLng/2) * Math.sin(dLng/2);
+//        Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+//        Double distance = Radius * c;
+//        return distance;
+//    }
 
     public static Double coordinatesToDistance(Double fromLat, Double fromLng, Double toLat, Double toLng){
         Double lat1 = fromLat;
@@ -157,6 +157,48 @@ public class Utils {
         Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         Double distance = Radius * c;
         return distance;
+    }
+
+    /**
+     * calculate the distance from the point to the line segment
+     */
+
+    public static double pointToLine(Double x1, Double y1, Double x2, Double y2, Double x0,
+                                     Double y0) {
+        double space = 0;
+        double a, b, c;
+        a = lineSpace(x1, y1, x2, y2);
+        b = lineSpace(x1, y1, x0, y0);
+        c = lineSpace(x2, y2, x0, y0);
+        if (c+b == a) { // the point is on the line segment
+            space = 0;
+            return space;
+        }
+        if (c * c >= a * a + b * b) {// The target point forms an obtuse angle with the left endpoint
+            space = b;
+            return space;
+        }
+
+        if (b * b >= a * a + c * c) {// The target point forms an obtuse angle with the right endpoint
+            space = c;
+            return space;
+        }
+
+        double p = (a + b + c) / 2; // The target point forms an acute angle with the right endpoint
+        double s = Math.sqrt(p * (p - a) * (p - b) * (p - c));
+        space = 2 * s / a;
+        return space;
+    }
+
+    /**
+     * calculate the distance between 2 latlngs
+     */
+
+    public static double lineSpace(double x1, double y1, double x2, double y2){
+        double lineLength = 0;
+        lineLength = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2)
+                * (y1 - y2));
+        return lineLength;
     }
 
 }
