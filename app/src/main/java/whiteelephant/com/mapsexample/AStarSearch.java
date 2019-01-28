@@ -19,22 +19,22 @@ public class AStarSearch {
         this.allRoads = allRoads;
     }
 
-    public ArrayList<String> findpath(String start, String goal){
+    public ArrayList<String> findpath(Double startLat,Double startLng,Double endLat,Double endLng,Road startRoad, Road endRoad){
 
         frontier.clear();
         costSoFar.clear();
         cameFrom.clear();
         exploredNodes.clear();
 
-        frontier.put(start, 0.0);
-        costSoFar.put(start, 0.0);
+        frontier.put("start", 0.0);
+        costSoFar.put("start", 0.0);
 
         while (frontier.size() > 0) {
             String current = getNextNodeToExpand();
-            if (current.equals(goal)) return drawPath(current);
+            if (current.equals("end")) return drawPath(current);
             frontier.remove(current);
             exploredNodes.add(current);
-            ArrayList<Road> successors = getSuccessors(current);
+            ArrayList<Road> successors = getSuccessors(current,startLat,startLng,endLat,endLng,startRoad,endRoad);
 
             for (Road road: successors){
                 String successor;
@@ -67,14 +67,23 @@ public class AStarSearch {
                 frontier.put(successor, priority);
 
             }
-
         }
         return null;
     }
 
-    private ArrayList<Road> getSuccessors(String current) {
-
+    private ArrayList<Road> getSuccessors(String current,Double startLat,Double startLng,Double endLat,Double endLng,Road startRoad, Road endRoad) {
         ArrayList<Road> successors = new ArrayList<>();
+        if(current.equals("start")){
+            successors.add(new Road(current, startRoad.getFromCrossID(), startLat, startLng, startRoad.getFromLat(), startRoad.getFromLng(), startRoad.getPollutionIndex()));
+            successors.add(new Road(current, startRoad.getToCrossID(), startLat, startLng, startRoad.getToLat(), startRoad.getToLng(), startRoad.getPollutionIndex()));
+        }
+        if(current.equals(endRoad.getFromCrossID())){
+            successors.add(new Road(current, "end",endRoad.getFromLat(), endRoad.getFromLng(), endLat, endLng, endRoad.getPollutionIndex()));
+        }
+        if(current.equals(endRoad.getToCrossID())){
+            successors.add(new Road(current, "end",endRoad.getToLat(), endRoad.getToLng(), endLat, endLng, endRoad.getPollutionIndex()));
+        }
+
         for(Road road: allRoads) {
             if (road.getFromCrossID().equals(current)||road.getToCrossID().equals(current)){
                 successors.add(road);
