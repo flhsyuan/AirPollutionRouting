@@ -85,27 +85,14 @@ public class GetDirectionApiService extends IntentService {
 
             Log.d(TAG, "origin =  " + origin + ", destination : " + destination + ", APIKey : " + apiKey);
 
-//            List<String> nearest2Crosses = getNearestCross(origin);
-
-            //read road csv
-            System.out.println("test");
+            Road nearestRoadofStart = getNearestRoad(fromLat,fromLng);   //yuan
+            Road nearestRoadofEnd = getNearestRoad(toLat,toLng);   //yuan
 
             ArrayList<Road> allRoads = readPollutionCSV();
-            ArrayList<String> pathList = new AStarSearch(allRoads).findpath("5","44");
+            ArrayList<String> pathList = new AStarSearch(allRoads).findpath(fromLat,fromLng,toLat,toLng,nearestRoadofStart,nearestRoadofEnd);
             for(String node: pathList){
                 System.out.println(node);
             }
-
-//            Log.d(TAG, "onHandleIntent: the 2 points are "+nearest2Crosses);
-            List<String> nearestRoadofStart = getNearestRoad(fromLat,fromLng);   //yuan
-            List<String> nearestRoadofEnd = getNearestRoad(toLat,toLng);   //yuan
-//            Log.d(TAG, "onHandleIntent: the road of start is  "+nearestRoadofStart+" the start latlng is "+origin);
-//            Log.d(TAG, "onHandleIntent: the road of end is  "+nearestRoadofEnd+" the end latlng is "+destination);
-//            for(String id:nearestRoadofStart){
-//                Log.d(TAG, "onHandleIntent: the latlng is "+idToLatLng(id));
-//            }
-
-
 
             //TODO
             // 1.对于起点和终点，各自找到距离最近的cross点坐标
@@ -234,8 +221,8 @@ public class GetDirectionApiService extends IntentService {
      * return 2 nearest cross to the given position
      */
 
-    public ArrayList<String> getNearestRoad(Double originLat, Double originLng){
-        ArrayList<String> nearestRoads = new ArrayList<>();
+    public Road getNearestRoad(Double originLat, Double originLng){
+        Road target = new Road();
         ArrayList<Road> roads = readPollutionCSV();
 
         Map<String,Double> map = new HashMap<>();
@@ -261,10 +248,20 @@ public class GetDirectionApiService extends IntentService {
         String[] fromAndTo= twoNodeNumber.split(",");
         String fromNum = fromAndTo[0];
         String toNum = fromAndTo[1];
-        nearestRoads.add(fromNum);
-        nearestRoads.add(toNum);
-        return nearestRoads;
 
+        for (Road road:roads){
+            if(road.getFromCrossID().equals(fromNum) && road.getToCrossID().equals(toNum)){
+                target.setFromCrossID(road.getFromCrossID());
+                target.setToCrossID(road.getToCrossID());
+                target.setFromLat(road.getFromLat());
+                target.setToLat(road.getToLat());
+                target.setFromLng(road.getFromLng());
+                target.setToLng(road.getToLng());
+                target.setPollutionIndex(road.getPollutionIndex());
+                target.setDistance(road.getDistance());
+            }
+        }
+        return target;
 
 //        Map<String,Double> map = new HashMap<>();
 //
