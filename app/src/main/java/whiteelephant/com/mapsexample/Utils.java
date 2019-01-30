@@ -15,6 +15,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -115,32 +118,6 @@ public class Utils {
         d.show();
     }
 
-    /**
-     * calculate distance between 2 positions using coordinates string(LatLng)
-     * Attention: there is a "_" between lat and lng.
-     *
-     * @param from_LatLng,to_LatLng
-     * @return distance
-     */
-
-//    public static Double coordinatesToDistance(String from_LatLng,String to_LatLng){
-//        String[] fromArray = from_LatLng.split("_");
-//        String[] toArray = to_LatLng.split("_");
-//        Double lat1 = Double.valueOf(fromArray[0]);
-//        Double lng1 = Double.valueOf(fromArray[1]);
-//        Double lat2 = Double.valueOf(toArray[0]);
-//        Double lng2 = Double.valueOf(toArray[1]);
-//
-//        final Double Radius = 6378.137;
-//        Double dLat = (lat2 - lat1) * Math.PI / 180;
-//        Double dLng = (lng2 - lng1) * Math.PI / 180;
-//        Double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-//                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-//                        Math.sin(dLng/2) * Math.sin(dLng/2);
-//        Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-//        Double distance = Radius * c;
-//        return distance;
-//    }
 
     public static Double coordinatesToDistance(Double fromLat, Double fromLng, Double toLat, Double toLng){
         Double lat1 = fromLat;
@@ -199,6 +176,33 @@ public class Utils {
         lineLength = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2)
                 * (y1 - y2));
         return lineLength;
+    }
+
+    /**
+     * translate seconds(int) to minutes(string)
+     */
+
+    public static String getMinutes(int seconds){
+        double minutes = seconds/60;
+        NumberFormat nf = NumberFormat.getNumberInstance();
+        nf.setMaximumFractionDigits(0);
+        nf.setRoundingMode(RoundingMode.UP);
+        String result = nf.format(minutes)+" min";
+        return result ;
+
+    }
+
+    /**
+     * translate meters(int) to KMs(string)
+     */
+
+    public static String getKMs(int meters){
+        double kms = meters/1000;
+        BigDecimal b = new BigDecimal(kms);
+        double result = b.setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+        String resultString = String.valueOf(result);
+        resultString +=" km";
+        return resultString;
     }
 
 }

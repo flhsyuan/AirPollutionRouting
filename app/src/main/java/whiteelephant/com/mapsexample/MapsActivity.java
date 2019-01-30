@@ -539,6 +539,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     _map.animateCamera(cu);
 
                     List<Directions.Steps> steps = new ArrayList<>();
+                    int durationsOfAll =0;
+                    int distanceOfAll =0;
+
                     for (final Directions.Legs legs : route.legs) {
                         if (!Utils.isListEmpty(route.legs)) {
 
@@ -547,7 +550,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                             for (Directions.Steps step : legs.steps) {
 //                                List<Directions.Steps> steps = legs.steps;
+
+                                // put all steps in a list and calculate the whole distance and duration
                                 steps.add(step);
+                                durationsOfAll += step.duration.value; // yuan
+                                distanceOfAll += step.distance.value;  // yuan
+
                                 _bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
                                 Log.d(TAG, "Route : " + step.htmlInstructions);
@@ -558,12 +566,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     _adapter.swap(steps);
                                 }
 
-                                // build latlong bound to set best fit for maps
-//                                builder.include(step.startLocation.getLatLng());
-//                                builder.include(step.endLocation.getLatLng());
-
-                                // decoding path into latlng's
-                                //
 
                                 List<LatLng> decodedPath = PolyUtil.decode(step.polyline.points);
                                 Log.d(TAG, "onDirectionsFetched: these are points: "+decodedPath.toString());
@@ -585,7 +587,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 _bottomSheet.setVisibility(View.VISIBLE);
 
                                 // showing route time and distance
-                                setDistanceAndTime(legs.distance.text, legs.duration.text);
+                                setDistanceAndTime(Utils.getKMs(distanceOfAll),Utils.getMinutes(durationsOfAll));
 
                                 _map.setOnPolylineClickListener(new GoogleMap.OnPolylineClickListener() {
                                     @Override
@@ -694,4 +696,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
+
+
 }
