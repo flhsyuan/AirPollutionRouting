@@ -90,20 +90,23 @@ public class GetDirectionApiService extends IntentService {
 
             ArrayList<Road> allRoads = readPollutionCSV();
             ArrayList<String> pathList = new AStarSearch(allRoads).findpath(fromLat,fromLng,toLat,toLng,nearestRoadofStart,nearestRoadofEnd);
-            for(String node: pathList){
-                System.out.println(node);
-            }
 
-            //TODO
-            // 1.对于起点和终点，各自找到距离最近的cross点坐标
-            // 2.找到的cross用AStar,找到必经的cross
+            String waypoints="";
+            for(int i=1; i<pathList.size()-1; i++){
+                String waypoint = idToLatLng(pathList.get(i));
+                waypoints += waypoint + "|";
+            }
+            waypoints= waypoints.substring(0,waypoints.length()-1);
+
+
             // 3.把必经的cross加入到waypoints里面
             if (fromLat != 0.0 && fromLng != 0.0 && toLat != 0.0 && toLng != 0.0 && apiKey != null) {
                 Retrofit retrofit = new Retrofit.Builder().baseUrl("https://maps.googleapis.com")
                         .addConverterFactory(GsonConverterFactory.create()).build();
                 GetDirectionInterface apiService = retrofit.create(GetDirectionInterface.class);
-                //TODO the latlng need to be changed
-                Call<Directions> call = apiService.getDirections(origin, destination, apiKey, "-37.8136,144.9654", "walking", false);
+//                Call<Directions> call = apiService.getDirections(origin, destination, apiKey, waypoints, "walking", false);
+//                Log.d(TAG, "onHandleIntent: the waypoints are "+waypoints);
+                Call<Directions> call = apiService.getDirections(origin, destination, apiKey,null, "walking", false);
                 call.enqueue(new Callback<Directions>() {
                     @Override
                     public void onResponse(Call<Directions> call, Response<Directions> response) {
@@ -218,7 +221,7 @@ public class GetDirectionApiService extends IntentService {
 
 
     /**
-     * return 2 nearest cross to the given position
+     * return the nearest road to the given position
      */
 
     public Road getNearestRoad(Double originLat, Double originLng){
@@ -296,6 +299,11 @@ public class GetDirectionApiService extends IntentService {
 //        }
     }
 
+    /**
+     * return the latitude and longitude of the given Cross ID
+     * @param id
+     * @return
+     */
     public String idToLatLng(String id){
         ArrayList<Cross> crossArray = readCrossCSV();
         String latLng ="";

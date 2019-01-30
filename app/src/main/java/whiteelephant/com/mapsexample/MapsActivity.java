@@ -518,7 +518,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onDirectionsFetched(DirectionsEvent event) {
         Log.d(TAG, "onDirectionsFetched : ");
         if (event != null && event._directions != null && event._directions.routes.size() > 0) {
+
+            Directions.Routes wholeRoute = event._directions.routes.get(0);//
+            Directions.Legs leg = wholeRoute.legs.get(0);//
+            setDistanceAndTime(leg.distance.text, leg.duration.text);//
+
+
             for (Directions.Routes route : event._directions.routes) {
+
                 if (route.legs.size() != 0) {
 
                     Log.d(TAG, "onDirectionsFetched: the routes are "+ route.toString());
@@ -567,7 +574,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 _bottomSheet.setVisibility(View.VISIBLE);
 
                                 // showing route time and distance
-                                setDistanceAndTime(legs.distance.text, legs.duration.text);
+//                                setDistanceAndTime(legs.distance.text, legs.duration.text);
 
                                 _map.setOnPolylineClickListener(new GoogleMap.OnPolylineClickListener() {
                                     @Override
