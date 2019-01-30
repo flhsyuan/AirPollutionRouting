@@ -106,7 +106,7 @@ public class GetDirectionApiService extends IntentService {
                 GetDirectionInterface apiService = retrofit.create(GetDirectionInterface.class);
 //                Call<Directions> call = apiService.getDirections(origin, destination, apiKey, waypoints, "walking", false);
 //                Log.d(TAG, "onHandleIntent: the waypoints are "+waypoints);
-                Call<Directions> call = apiService.getDirections(origin, destination, apiKey,null, "walking", false);
+                Call<Directions> call = apiService.getDirections(origin, destination, apiKey,waypoints, "walking", false);
                 call.enqueue(new Callback<Directions>() {
                     @Override
                     public void onResponse(Call<Directions> call, Response<Directions> response) {
