@@ -519,7 +519,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.d(TAG, "onDirectionsFetched : ");
         if (event != null && event._directions != null && event._directions.routes.size() > 0) {
 
-//            Directions.Routes wholeRoute = event._directions.routes.get(0);// yuan
+//            Directions.Routes wholeRoute = event._directions.routes.get(0);//
 //            Directions.Legs leg = wholeRoute.legs.get(0);//
 //            setDistanceAndTime(leg.distance.text, leg.duration.text);//
 
@@ -530,25 +530,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     Log.d(TAG, "onDirectionsFetched: the routes are "+ route.toString());
 
-                    // build latlong bound to set best fit for maps
                     LatLngBounds.Builder builder = new LatLngBounds.Builder();
-
                     builder.include(route.legs.get(0).steps.get(0).startLocation.getLatLng());
-
-                    Directions.Legs theLastLeg = route.legs.get(route.legs.size()-1);
-                    int stepsSize = theLastLeg.steps.size();
-                    builder.include(theLastLeg.steps.get(stepsSize-1).startLocation.getLatLng()); //yuan
-
+                    builder.include(route.legs.get(route.legs.size()-1).steps.get(route.legs.get(route.legs.size()-1).steps.size()-1).endLocation.getLatLng());
                     LatLngBounds bounds = builder.build();
                     // create the camera with bounds and padding to set into map
                     CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, MAP_PADDING);
                     _map.animateCamera(cu);
 
+                    List<Directions.Steps> steps = new ArrayList<>();
                     for (final Directions.Legs legs : route.legs) {
                         if (!Utils.isListEmpty(route.legs)) {
 
+                            // build latlong bound to set best fit for maps
+//                            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+
                             for (Directions.Steps step : legs.steps) {
-                                List<Directions.Steps> steps = legs.steps;
+//                                List<Directions.Steps> steps = legs.steps;
+                                steps.add(step);
                                 _bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
                                 Log.d(TAG, "Route : " + step.htmlInstructions);
@@ -558,6 +557,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 } else {
                                     _adapter.swap(steps);
                                 }
+
+                                // build latlong bound to set best fit for maps
+//                                builder.include(step.startLocation.getLatLng());
+//                                builder.include(step.endLocation.getLatLng());
+
+                                // decoding path into latlng's
+                                //
 
                                 List<LatLng> decodedPath = PolyUtil.decode(step.polyline.points);
                                 Log.d(TAG, "onDirectionsFetched: these are points: "+decodedPath.toString());
@@ -599,13 +605,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     }
                                 });
                             }
-
                         } else showNoRoutesFound();
                     }
                 } else showNoRoutesFound();
             }
         } else showNoRoutesFound();
-
     }
 
     /**
