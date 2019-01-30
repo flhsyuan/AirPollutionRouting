@@ -519,9 +519,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.d(TAG, "onDirectionsFetched : ");
         if (event != null && event._directions != null && event._directions.routes.size() > 0) {
 
-            Directions.Routes wholeRoute = event._directions.routes.get(0);//
-            Directions.Legs leg = wholeRoute.legs.get(0);//
-            setDistanceAndTime(leg.distance.text, leg.duration.text);//
+//            Directions.Routes wholeRoute = event._directions.routes.get(0);//
+//            Directions.Legs leg = wholeRoute.legs.get(0);//
+//            setDistanceAndTime(leg.distance.text, leg.duration.text);//
 
 
             for (Directions.Routes route : event._directions.routes) {
@@ -530,13 +530,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     Log.d(TAG, "onDirectionsFetched: the routes are "+ route.toString());
 
+                    LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                    builder.include(route.legs.get(0).steps.get(0).startLocation.getLatLng());
+                    builder.include(route.legs.get(route.legs.size()-1).steps.get(route.legs.get(route.legs.size()-1).steps.size()-1).endLocation.getLatLng());
+                    LatLngBounds bounds = builder.build();
+                    // create the camera with bounds and padding to set into map
+                    CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, MAP_PADDING);
+                    _map.animateCamera(cu);
+
+                    List<Directions.Steps> steps = new ArrayList<>();
                     for (final Directions.Legs legs : route.legs) {
                         if (!Utils.isListEmpty(route.legs)) {
 
                             // build latlong bound to set best fit for maps
-                            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+//                            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+
                             for (Directions.Steps step : legs.steps) {
-                                List<Directions.Steps> steps = legs.steps;
+//                                List<Directions.Steps> steps = legs.steps;
+                                steps.add(step);
                                 _bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
                                 Log.d(TAG, "Route : " + step.htmlInstructions);
@@ -548,8 +559,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 }
 
                                 // build latlong bound to set best fit for maps
-                                builder.include(step.startLocation.getLatLng());
-                                builder.include(step.endLocation.getLatLng());
+//                                builder.include(step.startLocation.getLatLng());
+//                                builder.include(step.endLocation.getLatLng());
 
                                 // decoding path into latlng's
                                 //
@@ -574,7 +585,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 _bottomSheet.setVisibility(View.VISIBLE);
 
                                 // showing route time and distance
-//                                setDistanceAndTime(legs.distance.text, legs.duration.text);
+                                setDistanceAndTime(legs.distance.text, legs.duration.text);
 
                                 _map.setOnPolylineClickListener(new GoogleMap.OnPolylineClickListener() {
                                     @Override
@@ -594,10 +605,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     }
                                 });
                             }
-                            LatLngBounds bounds = builder.build();
-                            // create the camera with bounds and padding to set into map
-                            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, MAP_PADDING);
-                            _map.animateCamera(cu);
                         } else showNoRoutesFound();
                     }
                 } else showNoRoutesFound();
