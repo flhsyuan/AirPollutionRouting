@@ -46,6 +46,7 @@ public class GetDirectionApiService extends IntentService {
     private static final String PARAM_TO_LAT = "to_lat";
     private static final String PARAM_TO_LNG = "to_lng";
     private static final String PARAM_APIKEY = "apiKey";
+    private static final String AIR_OR_NORMAL = "AIR";  //yuan
     static final String TAG = Utils.getLogTAG(GetDirectionApiService.class);
 
     @Override
@@ -60,13 +61,15 @@ public class GetDirectionApiService extends IntentService {
     }
 
     public static void getPossibleDirections(@NonNull Context context, @NonNull LatLng fromLatLng,
-                                             @NonNull LatLng toLatLng, @NonNull String mapsAPIKey) {
+                                             @NonNull LatLng toLatLng, @NonNull String mapsAPIKey,
+                                             @NonNull String airOrNormal) {
         Intent intent = new Intent(context, GetDirectionApiService.class);
         intent.putExtra(PARAM_FROM_LAT, fromLatLng.latitude);
         intent.putExtra(PARAM_FROM_LNG, fromLatLng.longitude);
         intent.putExtra(PARAM_TO_LAT, toLatLng.latitude);
         intent.putExtra(PARAM_TO_LNG, toLatLng.longitude);
         intent.putExtra(PARAM_APIKEY, mapsAPIKey);
+        intent.putExtra(AIR_OR_NORMAL,airOrNormal);
         context.startService(intent);
     }
 
@@ -79,34 +82,18 @@ public class GetDirectionApiService extends IntentService {
             Double fromLat = intent.getDoubleExtra(PARAM_FROM_LAT, 0.0);
             Double fromLng = intent.getDoubleExtra(PARAM_FROM_LNG, 0.0);
             String apiKey = intent.getStringExtra(PARAM_APIKEY);
+            String mode = intent.getStringExtra(AIR_OR_NORMAL);
 
             final String origin = fromLat + ", " + fromLng;
             String destination = toLat + ", " + toLng;
 
             Log.d(TAG, "origin =  " + origin + ", destination : " + destination + ", APIKey : " + apiKey);
 
-            Road nearestRoadofStart = getNearestRoad(fromLat,fromLng);   //yuan
-            Road nearestRoadofEnd = getNearestRoad(toLat,toLng);   //yuan
-
-            ArrayList<Road> allRoads = readPollutionCSV();
-            ArrayList<String> pathList = new AStarSearch(allRoads).findpath(fromLat,fromLng,toLat,toLng,nearestRoadofStart,nearestRoadofEnd);
-
-            String waypoints="";
-            for(int i=1; i<pathList.size()-1; i++){
-                String waypoint = idToLatLng(pathList.get(i));
-                waypoints += waypoint + "|";
-            }
-            waypoints= waypoints.substring(0,waypoints.length()-1);
-
-
-            // 3.把必经的cross加入到waypoints里面
-            if (fromLat != 0.0 && fromLng != 0.0 && toLat != 0.0 && toLng != 0.0 && apiKey != null) {
+            if (mode.equals("NORMAL")) {
                 Retrofit retrofit = new Retrofit.Builder().baseUrl("https://maps.googleapis.com")
                         .addConverterFactory(GsonConverterFactory.create()).build();
                 GetDirectionInterface apiService = retrofit.create(GetDirectionInterface.class);
-                Call<Directions> call = apiService.getDirections(origin, destination, apiKey, waypoints, "walking", false);
-                Log.d(TAG, "onHandleIntent: the waypoints are "+waypoints);
-//                Call<Directions> call = apiService.getDirections(origin, destination, apiKey,null, "walking", false);
+                Call<Directions> call = apiService.getDirections(origin, destination, apiKey, null, "walking", false);
                 call.enqueue(new Callback<Directions>() {
                     @Override
                     public void onResponse(Call<Directions> call, Response<Directions> response) {
@@ -122,7 +109,45 @@ public class GetDirectionApiService extends IntentService {
                     }
                 });
             } else {
-                Log.d(TAG, " some values are unexpected");
+                Road nearestRoadofStart = getNearestRoad(fromLat, fromLng);   //yuan
+                Road nearestRoadofEnd = getNearestRoad(toLat, toLng);   //yuan
+
+                ArrayList<Road> allRoads = readPollutionCSV();
+                ArrayList<String> pathList = new AStarSearch(allRoads).findpath(fromLat, fromLng, toLat, toLng, nearestRoadofStart, nearestRoadofEnd);
+
+                String waypoints = "";
+                for (int i = 1; i < pathList.size() - 1; i++) {
+                    String waypoint = idToLatLng(pathList.get(i));
+                    waypoints += waypoint + "|";
+                }
+                waypoints = waypoints.substring(0, waypoints.length() - 1);
+
+
+                // 3.把必经的cross加入到waypoints里面
+                if (fromLat != 0.0 && fromLng != 0.0 && toLat != 0.0 && toLng != 0.0 && apiKey != null) {
+                    Retrofit retrofit = new Retrofit.Builder().baseUrl("https://maps.googleapis.com")
+                            .addConverterFactory(GsonConverterFactory.create()).build();
+                    GetDirectionInterface apiService = retrofit.create(GetDirectionInterface.class);
+                    Call<Directions> call = apiService.getDirections(origin, destination, apiKey, waypoints, "walking", false);
+                    Log.d(TAG, "onHandleIntent: the waypoints are " + waypoints);
+//                Call<Directions> call = apiService.getDirections(origin, destination, apiKey,null, "walking", false);
+                    call.enqueue(new Callback<Directions>() {
+                        @Override
+                        public void onResponse(Call<Directions> call, Response<Directions> response) {
+                            Log.d(TAG, "Hey... Got a response");
+
+                            DirectionsEvent directions = new DirectionsEvent(response.body());
+                            BusProvider.getInstance().post(directions);
+                        }
+
+                        @Override
+                        public void onFailure(Call<Directions> call, Throwable t) {
+
+                        }
+                    });
+                } else {
+                    Log.d(TAG, " some values are unexpected");
+                }
             }
         }
     }
