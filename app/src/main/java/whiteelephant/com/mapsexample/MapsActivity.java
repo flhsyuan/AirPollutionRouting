@@ -539,6 +539,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     _map.animateCamera(cu);
 
                     List<Directions.Steps> steps = new ArrayList<>();
+                    long distances = 0;
+                    long durations = 0;
                     for (final Directions.Legs legs : route.legs) {
                         if (!Utils.isListEmpty(route.legs)) {
 
@@ -548,6 +550,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             for (Directions.Steps step : legs.steps) {
 //                                List<Directions.Steps> steps = legs.steps;
                                 steps.add(step);
+                                distances += step.distance.value;
+                                durations += step.duration.value;
+
                                 _bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
                                 Log.d(TAG, "Route : " + step.htmlInstructions);
@@ -577,7 +582,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 Polyline line = _map.addPolyline(options);
                                 // set steps as a tag and retrive them on click of polyline
                                 line.setTag(legs);
-                                line.setClickable(true);
+                                line.setClickable(false);
 
                                 // add polyline to list and remove them when map change
                                 _polylineList.add(line);
@@ -585,7 +590,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 _bottomSheet.setVisibility(View.VISIBLE);
 
                                 // showing route time and distance
-                                setDistanceAndTime(legs.distance.text, legs.duration.text);
+                                setDistanceAndTime(String.valueOf(distances), String.valueOf(durations));
 
                                 _map.setOnPolylineClickListener(new GoogleMap.OnPolylineClickListener() {
                                     @Override
