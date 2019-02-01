@@ -364,16 +364,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //  mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);// yuan:the original one
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);// yuan:the alternate one
         // checking location permission
-        if (isLocationPermissionGranted()) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-                return;
-            }
-            LocationServices.FusedLocationApi.requestLocationUpdates(_googleApiClient,
-                    mLocationRequest, this);
-        } else {
-            Log.d(TAG, "User denied the permissions");
-        }
+//        if (isLocationPermissionGranted()) {
+//            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//
+//                return;
+//            }
+//            LocationServices.FusedLocationApi.requestLocationUpdates(_googleApiClient,
+//                    mLocationRequest, this);
+//        } else {
+//            Log.d(TAG, "User denied the permissions");
+//        }
     }
 
 

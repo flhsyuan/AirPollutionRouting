@@ -197,11 +197,8 @@ public class Utils {
      */
 
     public static String getKMs(int meters){
-        double kms = meters/1000;
-        BigDecimal b = new BigDecimal(kms);
-        double result = b.setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
-        String resultString = String.valueOf(result);
-        resultString +=" km";
+        double kms = meters/1000.0;
+        String resultString = String.format("%.1f",kms)+" km";
         return resultString;
     }
 
