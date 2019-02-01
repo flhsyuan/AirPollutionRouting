@@ -1,8 +1,8 @@
-package whiteelephant.com.mapsexample;
+package airpollutionrouting.com.mapsexample;
 
 import okhttp3.internal.Util;
 
-import static whiteelephant.com.mapsexample.Utils.coordinatesToDistance;
+import static airpollutionrouting.com.mapsexample.Utils.coordinatesToDistance;
 
 public class Road {
 

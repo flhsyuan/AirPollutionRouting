@@ -1,4 +1,4 @@
-package whiteelephant.com.mapsexample;
+package airpollutionrouting.com.mapsexample;
 
 import android.app.IntentService;
 import android.content.Context;
@@ -30,9 +30,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import whiteelephant.com.mapsexample.api.GetDirectionInterface;
-import whiteelephant.com.mapsexample.events.DirectionsEvent;
-import whiteelephant.com.mapsexample.models.Directions;
+import airpollutionrouting.com.mapsexample.api.GetDirectionInterface;
+import airpollutionrouting.com.mapsexample.events.DirectionsEvent;
+import airpollutionrouting.com.mapsexample.models.Directions;
 
 /**
  * Created by prem on 15/07/2017.

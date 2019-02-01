@@ -4,7 +4,7 @@ android {
     compileSdkVersion 27
     buildToolsVersion '27.0.3'
     defaultConfig {
-        applicationId "whiteelephant.com.mapsexample"
+        applicationId "airpollutionrouting.com.mapsexample"
         minSdkVersion 16
         targetSdkVersion 26
         versionCode 1

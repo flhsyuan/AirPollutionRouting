@@ -1,4 +1,4 @@
-package whiteelephant.com.mapsexample;
+package airpollutionrouting.com.mapsexample;
 
 
 import android.app.Dialog;
@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 
 import java.util.List;
 
-import whiteelephant.com.mapsexample.models.Directions;
+import airpollutionrouting.com.mapsexample.models.Directions;
 
 
 /**

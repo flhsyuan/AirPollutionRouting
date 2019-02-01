@@ -1,4 +1,4 @@
-package whiteelephant.com.mapsexample;
+package airpollutionrouting.com.mapsexample;
 
 import java.util.ArrayList;
 import java.util.Collections;

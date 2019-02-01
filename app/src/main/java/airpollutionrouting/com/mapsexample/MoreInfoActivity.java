@@ -1,4 +1,4 @@
-package whiteelephant.com.mapsexample;
+package airpollutionrouting.com.mapsexample;
 
 import android.content.Intent;
 import android.os.Bundle;

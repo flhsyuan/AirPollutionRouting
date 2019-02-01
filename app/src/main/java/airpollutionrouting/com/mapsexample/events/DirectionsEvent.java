@@ -1,6 +1,6 @@
-package whiteelephant.com.mapsexample.events;
+package airpollutionrouting.com.mapsexample.events;
 
-import whiteelephant.com.mapsexample.models.Directions;
+import airpollutionrouting.com.mapsexample.models.Directions;
 
 /**
  * Created by prem on 16/07/2017.

@@ -1,4 +1,4 @@
-package whiteelephant.com.mapsexample;
+package airpollutionrouting.com.mapsexample;
 
 import android.Manifest;
 import android.content.DialogInterface;
@@ -71,9 +71,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import whiteelephant.com.mapsexample.events.AddressFetchedEvent;
-import whiteelephant.com.mapsexample.events.DirectionsEvent;
-import whiteelephant.com.mapsexample.models.Directions;
+import airpollutionrouting.com.mapsexample.events.AddressFetchedEvent;
+import airpollutionrouting.com.mapsexample.events.DirectionsEvent;
+import airpollutionrouting.com.mapsexample.models.Directions;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, // called when the connection is connected

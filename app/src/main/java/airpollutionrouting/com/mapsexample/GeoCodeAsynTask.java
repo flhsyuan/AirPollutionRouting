@@ -1,4 +1,4 @@
-package whiteelephant.com.mapsexample;
+package airpollutionrouting.com.mapsexample;
 
 import android.content.Context;
 import android.location.Address;
@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-import whiteelephant.com.mapsexample.events.AddressFetchedEvent;
+import airpollutionrouting.com.mapsexample.events.AddressFetchedEvent;
 
 /**
  * Created by prem on 15/07/2017.

@@ -1,4 +1,4 @@
-package whiteelephant.com.mapsexample.models;
+package airpollutionrouting.com.mapsexample.models;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;

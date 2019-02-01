@@ -1,4 +1,4 @@
-package whiteelephant.com.mapsexample;
+package airpollutionrouting.com.mapsexample;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,7 +13,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import whiteelephant.com.mapsexample.models.Directions;
+import airpollutionrouting.com.mapsexample.models.Directions;
 
 /**
  * Created by prem on 16/07/2017.

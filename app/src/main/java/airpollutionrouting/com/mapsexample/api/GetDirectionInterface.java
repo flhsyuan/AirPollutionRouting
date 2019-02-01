@@ -1,11 +1,11 @@
-package whiteelephant.com.mapsexample.api;
+package airpollutionrouting.com.mapsexample.api;
 
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
-import whiteelephant.com.mapsexample.models.Directions;
+import airpollutionrouting.com.mapsexample.models.Directions;
 
 /**
  * Created by prem on 29/11/2016.
