@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -60,8 +61,15 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
 import com.squareup.otto.Subscribe;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import whiteelephant.com.mapsexample.events.AddressFetchedEvent;
 import whiteelephant.com.mapsexample.events.DirectionsEvent;
@@ -96,6 +104,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     TextView _noRoutes, _totalKMS, _totalTime;
     ProgressBar _progress;
     List<Polyline> _polylineList = new ArrayList<>();
+    List<Polyline> _pollutionLineList = new ArrayList<>();
     private static final int MAP_PADDING = 80;
 
     //the more info button
@@ -219,8 +228,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
             _map.setMyLocationEnabled(true);
 
+        }
+
+        ArrayList<Road> allRoads = readPollutionCSV();
+
+        for(Road road: allRoads){
+            int pollutionLevelColor;
+            if (road.getPollutionIndex()<2){
+                pollutionLevelColor = Color.GREEN;
+            }else if(road.getPollutionIndex()<5){
+                pollutionLevelColor = Color.YELLOW;
+            }else{
+                pollutionLevelColor = Color.RED;
+            }
+
+
+            // prepare pollution line
+            PolylineOptions options = new PolylineOptions()
+                    .add(new LatLng(road.getFromLat(), road.getFromLng()), new LatLng(road.getToLat(), road.getToLng()))
+                    .width(20)
+                    .color(pollutionLevelColor)
+                    .geodesic(true).zIndex(-1);
+
+            // add pollution line
+            Polyline pollutionLine = _map.addPolyline(options);
+
+            _pollutionLineList.add(pollutionLine);
+
 
         }
+
+
+
     }
 
 
@@ -625,17 +664,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                 List<LatLng> decodedPath = PolyUtil.decode(step.polyline.points);
                                 Log.d(TAG, "onDirectionsFetched: these are points: "+decodedPath.toString());
+
+
                                 // prepare poly line
                                 PolylineOptions options = new PolylineOptions()
                                         .addAll(decodedPath)
-                                        .width(20)
-                                        .color(Color.GREEN);
+                                        .width(10)
+                                        .color(Color.BLACK);
 
                                 // add polyline
                                 Polyline line = _map.addPolyline(options);
                                 // set steps as a tag and retrive them on click of polyline
                                 line.setTag(legs);
-                                line.setClickable(true);
+                                line.setClickable(false);
 
                                 // add polyline to list and remove them when map change
                                 _polylineList.add(line);
@@ -693,7 +734,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         _noRoutes.setVisibility(View.GONE);
         _progress.setVisibility(View.GONE);
         _routes.setVisibility(View.VISIBLE);
-
         _totalKMS.setText(distance);
         _totalTime.setText(duration);
     }
@@ -752,6 +792,51 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
+    }
+
+    /**
+     * Read the pollution csv.
+     * @return ArrayList<Road>
+     */
+    private ArrayList<Road> readPollutionCSV() {
+        ArrayList<Road> roadArray = new ArrayList<>();
+        InputStream is = null;
+        AssetManager assetManager = getBaseContext().getAssets();
+        try {
+            is = assetManager.open("pollution.csv");
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.d(TAG, "readCSV: failed to read pollution");
+        }
+
+        BufferedReader reader = null;
+        reader = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+
+        String line = "";
+        StringTokenizer st = null;
+        try {
+
+            while ((line = reader.readLine()) != null) {
+                st = new StringTokenizer(line, ",");
+                Road obj = new Road();
+                obj.setFromCrossID(st.nextToken());
+                obj.setToCrossID(st.nextToken());
+                double fromLat = Double.valueOf(st.nextToken());
+                double fromLng = Double.valueOf(st.nextToken());
+                double toLat = Double.valueOf(st.nextToken());
+                double toLng = Double.valueOf(st.nextToken());
+                obj.setFromLat(fromLat);
+                obj.setFromLng(fromLng);
+                obj.setToLat(toLat);
+                obj.setToLng(toLng);
+                obj.setPollutionIndex(Double.valueOf(st.nextToken()));
+                obj.setDistance(Utils.coordinatesToDistance(fromLat,fromLng,toLat,toLng));
+                roadArray.add(obj);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return roadArray;
     }
 
 
