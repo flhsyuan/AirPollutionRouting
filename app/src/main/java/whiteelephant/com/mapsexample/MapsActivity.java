@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -96,6 +98,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     List<Polyline> _polylineList = new ArrayList<>();
     private static final int MAP_PADDING = 80;
 
+    //the more info button
+    private TextView btn_icon;
+    private Drawable drawable;
+
+
     Marker _pickupMarker, _dropMarker;
 
     String TAG = MapsActivity.class.getName();
@@ -155,6 +162,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         _routeLay.setOnClickListener(this);
         _airPollutionRouting.setOnClickListener(this);
         _normalRouting.setOnClickListener(this);
+
+        //more info icon
+        btn_icon = findViewById(R.id.more_info);
+        drawable = getResources().getDrawable(R.drawable.ic_more_info);
+        drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
+        btn_icon.setCompoundDrawables(drawable,null,null,null);
+        btn_icon.setText("More info");
+        btn_icon.setTextSize(15);
+        btn_icon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MapsActivity.this,MoreInfoActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
     }
 

@@ -10,6 +10,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <include
+            android:id="@+id/title_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            layout="@layout/title_layout"
+            />
+
         <fragment xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_below="@+id/card_view"
             xmlns:tools="http://schemas.android.com/tools"
@@ -26,7 +34,8 @@
             android:layout_margin="12dp"
             android:elevation="3dp"
             app:cardCornerRadius="3dp"
-            app:contentPadding="8dp">
+            app:contentPadding="8dp"
+            android:layout_below="@+id/title_layout">
 
             <LinearLayout
                 android:layout_width="match_parent"
