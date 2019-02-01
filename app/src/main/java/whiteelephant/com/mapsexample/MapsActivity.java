@@ -25,6 +25,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -83,6 +84,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Location lastLocation;
     private Handler _handler = new Handler();
     private LatLng _pickupLatLng, _dropLatLng;
+    private Button _airPollutionRouting, _normalRouting;
     LinearLayout _bottomSheet;
     RecyclerView _bottomSheetListView;
     private BottomSheetBehavior _bottomSheetBehavior;
@@ -135,15 +137,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         _bottomSheetListView = findViewById(R.id.navigation_directions_list);
         _bottomSheetListView.setLayoutManager(new LinearLayoutManager(this));
 
+
+        //yuan the 2 button
+        _airPollutionRouting = findViewById(R.id.air_pollution_routing_button);
+        _normalRouting = findViewById(R.id.normal_routing);
+        _airPollutionRouting.setVisibility(View.GONE);
+        _normalRouting.setVisibility(View.GONE);
+
         _bottomSheetBehavior = BottomSheetBehavior.from(_bottomSheet);
         _bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         _bottomSheetBehavior.setHideable(false);
         _bottomSheetBehavior.setHideable(true);
 
-        // set onclick listeners
+        //yuan set onclick listeners
         _txtEdtPickup.setOnClickListener(this);
         _txtEdtDrop.setOnClickListener(this);
         _routeLay.setOnClickListener(this);
+        _airPollutionRouting.setOnClickListener(this);
+        _normalRouting.setOnClickListener(this);
 
     }
 
@@ -173,6 +184,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // checking location permission
         if (isLocationPermissionGranted()) {
             buildGoogleApiClient();// yuan followed the instruction
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
             _map.setMyLocationEnabled(true);
 
 
@@ -283,14 +304,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // checking location permission
         if (isLocationPermissionGranted()) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
+
                 return;
             }
             LocationServices.FusedLocationApi.requestLocationUpdates(_googleApiClient,
@@ -481,13 +495,40 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     // remove ploylines drawn before if any
                     removeAllPolylines();
-                    // show ProgressBar
-                    showProgress();
 
-                    // get Directions from server
-                    GetDirectionApiService.getPossibleDirections(this, _pickupLatLng, _dropLatLng,
-                            getString(R.string.google_maps_key));
+                    //TODO
 
+                    //zoom the camera to the pickup location and end location
+                    LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                    builder.include(_pickupLatLng);
+                    builder.include(_dropLatLng);
+                    LatLngBounds bounds = builder.build();
+                    // create the camera with bounds and padding to set into map
+                    CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, MAP_PADDING);
+                    _map.animateCamera(cu);
+
+                    _airPollutionRouting.setVisibility(View.VISIBLE);
+                    _airPollutionRouting.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            removeAllPolylines();
+                            GetDirectionApiService.getPossibleDirections(view.getContext(), _pickupLatLng, _dropLatLng,
+                                    getString(R.string.google_maps_key),"AIR");
+                        }
+                    });
+
+
+                    _normalRouting.setVisibility(View.VISIBLE);
+                    _normalRouting.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            removeAllPolylines();
+                            GetDirectionApiService.getPossibleDirections(view.getContext(), _pickupLatLng, _dropLatLng,
+                                    getString(R.string.google_maps_key),"NORMAL");
+
+
+                        }
+                    });
                 }
 
 
@@ -519,10 +560,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.d(TAG, "onDirectionsFetched : ");
         if (event != null && event._directions != null && event._directions.routes.size() > 0) {
 
-//            Directions.Routes wholeRoute = event._directions.routes.get(0);//
-//            Directions.Legs leg = wholeRoute.legs.get(0);//
-//            setDistanceAndTime(leg.distance.text, leg.duration.text);//
-
 
             for (Directions.Routes route : event._directions.routes) {
 
@@ -539,19 +576,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     _map.animateCamera(cu);
 
                     List<Directions.Steps> steps = new ArrayList<>();
-                    long distances = 0;
-                    long durations = 0;
+                    int durationsOfAll =0;
+                    int distanceOfAll =0;
+
                     for (final Directions.Legs legs : route.legs) {
                         if (!Utils.isListEmpty(route.legs)) {
 
-                            // build latlong bound to set best fit for maps
-//                            LatLngBounds.Builder builder = new LatLngBounds.Builder();
-
                             for (Directions.Steps step : legs.steps) {
-//                                List<Directions.Steps> steps = legs.steps;
+
+                                // put all steps in a list and calculate the whole distance and duration
                                 steps.add(step);
-                                distances += step.distance.value;
-                                durations += step.duration.value;
+                                durationsOfAll += step.duration.value; // yuan
+                                distanceOfAll += step.distance.value;  // yuan
 
                                 _bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
@@ -563,12 +599,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     _adapter.swap(steps);
                                 }
 
-                                // build latlong bound to set best fit for maps
-//                                builder.include(step.startLocation.getLatLng());
-//                                builder.include(step.endLocation.getLatLng());
-
-                                // decoding path into latlng's
-                                //
 
                                 List<LatLng> decodedPath = PolyUtil.decode(step.polyline.points);
                                 Log.d(TAG, "onDirectionsFetched: these are points: "+decodedPath.toString());
@@ -582,7 +612,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 Polyline line = _map.addPolyline(options);
                                 // set steps as a tag and retrive them on click of polyline
                                 line.setTag(legs);
-                                line.setClickable(false);
+                                line.setClickable(true);
 
                                 // add polyline to list and remove them when map change
                                 _polylineList.add(line);
@@ -590,7 +620,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 _bottomSheet.setVisibility(View.VISIBLE);
 
                                 // showing route time and distance
-                                setDistanceAndTime(String.valueOf(distances), String.valueOf(durations));
+                                setDistanceAndTime(Utils.getKMs(distanceOfAll),Utils.getMinutes(durationsOfAll));
 
                                 _map.setOnPolylineClickListener(new GoogleMap.OnPolylineClickListener() {
                                     @Override
@@ -668,6 +698,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         _routes.setVisibility(View.GONE);
     }
 
+
     @Override
     public void onBackPressed() {
 
@@ -699,4 +730,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
+
+
 }

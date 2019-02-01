@@ -103,6 +103,27 @@
             </LinearLayout>
         </android.support.v7.widget.CardView>
 
+        <Button
+            android:id="@+id/air_pollution_routing_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/card_view"
+            android:layout_marginLeft="10dp"
+            android:text="Air pollution routing"
+            android:onClick="airOnClick"/>
+
+
+        <Button
+            android:id="@+id/normal_routing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/card_view"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:text="normal routing"
+            android:layout_marginRight="10dp"
+            android:onClick="normalOnclick"/>
+
 
         <LinearLayout
             android:id="@+id/route_lay"
