@@ -8,7 +8,9 @@ import retrofit2.http.Query;
 import airpollutionrouting.com.mapsexample.models.Directions;
 
 /**
- * Created by prem on 29/11/2016.
+ * Created by Yiqun on 29/12/2018.
+ *
+ * Handling routing requests to Google API.
  */
 
 public interface GetDirectionInterface {
@@ -23,8 +25,8 @@ public interface GetDirectionInterface {
     Call<Directions> getDirections(@Query("origin") String origin,
                             @Query("destination") String destination,
                             @Query("key") String apiKey,
-                                   @Query("waypoints") String waypoints,
-                                   @Query("mode") String mode,
+                            @Query("waypoints") String waypoints,
+                            @Query("mode") String mode,
                             @Query("alternatives") boolean alternatives);
 
 }

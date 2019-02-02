@@ -5,20 +5,43 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import airpollutionrouting.com.mapsexample.models.Road;
+
+/**
+ * Created by Yiqun on 21/01/2019.
+ *
+ * Implementation of Astar (Dijkstra) algorithm.
+ */
+
 public class AStarSearch {
 
-
+    // All nodes can be expanded.
     private HashMap<String, Double> frontier = new HashMap<>();
+    // Reccording the current cost.
     private HashMap<String, Double> costSoFar = new HashMap<>();
+    // Recording the father node of current node
     private HashMap<String, String> cameFrom = new HashMap<>();
+    // Recording all visited nodes.
     private ArrayList<String> exploredNodes = new ArrayList<>();
-
+    // Store all roads data.
     private ArrayList<Road> allRoads;
 
     public AStarSearch(ArrayList<Road> allRoads){
         this.allRoads = allRoads;
     }
 
+    /**
+     *
+     * Calculating the best combination of nodes having the minimum air pollution value.
+     *
+     * @param startLat
+     * @param startLng
+     * @param endLat
+     * @param endLng
+     * @param startRoad
+     * @param endRoad
+     * @return ArrayList<String> a list of nodes that having the optimized A value.
+     */
     public ArrayList<String> findpath(Double startLat,Double startLng,Double endLat,Double endLng,Road startRoad, Road endRoad){
 
         frontier.clear();
@@ -31,9 +54,11 @@ public class AStarSearch {
 
         while (frontier.size() > 0) {
             String current = getNextNodeToExpand();
+            // reach the goal state
             if (current.equals("end")) return drawPath(current);
             frontier.remove(current);
             exploredNodes.add(current);
+            // get all possible successors of current node
             ArrayList<Road> successors = getSuccessors(current,startLat,startLng,endLat,endLng,startRoad,endRoad);
 
             for (Road road: successors){
@@ -72,6 +97,18 @@ public class AStarSearch {
         return null;
     }
 
+    /**
+     * Find all roads can be reached according to info of current node
+     *
+     * @param current
+     * @param startLat
+     * @param startLng
+     * @param endLat
+     * @param endLng
+     * @param startRoad
+     * @param endRoad
+     * @return ArrayList<Road> all possible successor roads
+     */
     private ArrayList<Road> getSuccessors(String current,Double startLat,Double startLng,Double endLat,Double endLng,Road startRoad, Road endRoad) {
         ArrayList<Road> successors = new ArrayList<>();
         if(current.equals("start")){
@@ -94,6 +131,10 @@ public class AStarSearch {
         return successors;
     }
 
+    /**
+     * Finding the next node to expand.
+     * @return String of the next node
+     */
     private String getNextNodeToExpand() {
         double min=Double.MAX_VALUE;
         String key = null;

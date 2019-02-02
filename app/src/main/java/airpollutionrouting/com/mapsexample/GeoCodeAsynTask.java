@@ -12,7 +12,9 @@ import java.util.Locale;
 import airpollutionrouting.com.mapsexample.events.AddressFetchedEvent;
 
 /**
- * Created by prem on 15/07/2017.
+ * Created by Yiqun on 26/01/2019.
+ *
+ * Handling geocode asynchronously.
  */
 
 public class GeoCodeAsynTask extends AsyncTask<Double, Void, Address> {

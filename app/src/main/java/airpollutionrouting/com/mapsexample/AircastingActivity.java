@@ -7,6 +7,12 @@ import android.os.Bundle;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+/**
+ * Created by Yuan on 20/01/2019.
+ *
+ * This activity is used to show the aircasting webpage.
+ */
+
 public class AircastingActivity extends AppCompatActivity{
 
     private WebView webView1;
@@ -23,7 +29,6 @@ public class AircastingActivity extends AppCompatActivity{
         webView1.setWebViewClient(new WebViewClient());
 
         webView1.loadUrl(url);
-
         webView1.getSettings().setUseWideViewPort(true);
         webView1.getSettings().setLoadWithOverviewMode(true);
         webView1.getSettings().setBuiltInZoomControls(true);

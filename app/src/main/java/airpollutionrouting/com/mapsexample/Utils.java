@@ -25,7 +25,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by prem on 15/07/2017.
+ * Created by Yuan and Yiqun on 15/01/2019.
+ * Some useful static methods.
  */
 
 public class Utils {
@@ -119,6 +120,14 @@ public class Utils {
     }
 
 
+    /**
+     * Calculate the distance between 2 locations given their latitudes and longitudes.
+     * @param fromLat
+     * @param fromLng
+     * @param toLat
+     * @param toLng
+     * @return
+     */
     public static Double coordinatesToDistance(Double fromLat, Double fromLng, Double toLat, Double toLng){
         Double lat1 = fromLat;
         Double lng1 = fromLng;

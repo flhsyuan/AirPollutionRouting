@@ -7,7 +7,9 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 /**
- * Created by prem on 15/07/2017.
+ * Created by Yiqun on 15/01/2019.
+ *
+ * Modelling JSON object returned by Google API.
  */
 
 public class Directions {

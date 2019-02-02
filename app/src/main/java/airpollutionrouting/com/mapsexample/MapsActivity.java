@@ -27,7 +27,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -67,14 +66,20 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 
 import airpollutionrouting.com.mapsexample.events.AddressFetchedEvent;
 import airpollutionrouting.com.mapsexample.events.DirectionsEvent;
 import airpollutionrouting.com.mapsexample.models.Directions;
+import airpollutionrouting.com.mapsexample.models.Road;
 
+/**
+ * Created by Yiqun and Yuan on 31/01/2019.
+ *
+ * The main activity of this app.
+ * Creating the map, storing the user input, sending requests and drawing polylines on the map.
+ */
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, // called when the connection is connected
         LocationListener,
@@ -242,7 +247,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 pollutionLevelColor = Color.RED;
             }
 
-
             // prepare pollution line
             PolylineOptions options = new PolylineOptions()
                     .add(new LatLng(road.getFromLat(), road.getFromLng()), new LatLng(road.getToLat(), road.getToLng()))
@@ -254,12 +258,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Polyline pollutionLine = _map.addPolyline(options);
 
             _pollutionLineList.add(pollutionLine);
-
-
         }
-
-
-
     }
 
 
@@ -506,6 +505,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    /**
+     * get the start location & destination, add markers and send requests to Google Map API
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     // A place has been received; use requestCode to track the request.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -557,8 +562,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     // remove ploylines drawn before if any
                     removeAllPolylines();
-
-                    //TODO
 
                     //zoom the camera to the pickup location and end location
                     LatLngBounds.Builder builder = new LatLngBounds.Builder();
@@ -617,6 +620,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    /**
+     * Drawing polylines on the map and showing the routing info
+     * @param event
+     *
+     */
     @Subscribe
     public void onDirectionsFetched(DirectionsEvent event) {
         Log.d(TAG, "onDirectionsFetched : ");

@@ -16,7 +16,9 @@ import java.util.List;
 import airpollutionrouting.com.mapsexample.models.Directions;
 
 /**
- * Created by prem on 16/07/2017.
+ * Created by Yuan on 26/01/2019.
+ *
+ * A simple adapter for Directions bottom sheet.
  */
 
 public class DirectionsBottomsheetAdapter extends RecyclerView.Adapter<DirectionsBottomsheetAdapter

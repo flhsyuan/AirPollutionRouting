@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import javax.xml.transform.dom.DOMLocator;
-
+import airpollutionrouting.com.mapsexample.models.Cross;
+import airpollutionrouting.com.mapsexample.models.Road;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -35,7 +35,10 @@ import airpollutionrouting.com.mapsexample.events.DirectionsEvent;
 import airpollutionrouting.com.mapsexample.models.Directions;
 
 /**
- * Created by prem on 15/07/2017.
+ * Created by Yiqun and Yuan on 12/01/2019.
+ *
+ * Handling the user input(start location & destination) and manipulate requests sent to Google
+ * Map API.
  */
 
 public class GetDirectionApiService extends IntentService {
@@ -73,9 +76,15 @@ public class GetDirectionApiService extends IntentService {
         context.startService(intent);
     }
 
+
+    /**
+     * send requests to Google Map API using retrofit.
+     * @param intent
+     */
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         if (intent != null) {
+            // read all info from intent
             Log.d(TAG, "Handling intent");
             Double toLat = intent.getDoubleExtra(PARAM_TO_LAT, 0.0);
             Double toLng = intent.getDoubleExtra(PARAM_TO_LNG, 0.0);
@@ -84,11 +93,13 @@ public class GetDirectionApiService extends IntentService {
             String apiKey = intent.getStringExtra(PARAM_APIKEY);
             String mode = intent.getStringExtra(AIR_OR_NORMAL);
 
+            // manipulate latitude and longitude of start location and destination.
             final String origin = fromLat + ", " + fromLng;
             String destination = toLat + ", " + toLng;
-
             Log.d(TAG, "origin =  " + origin + ", destination : " + destination + ", APIKey : " + apiKey);
 
+            // Send requests according to the type of service.
+            // "NORMAL" means returning nearest path without considering the air pollution index.
             if (mode.equals("NORMAL")) {
                 Retrofit retrofit = new Retrofit.Builder().baseUrl("https://maps.googleapis.com")
                         .addConverterFactory(GsonConverterFactory.create()).build();
@@ -108,7 +119,9 @@ public class GetDirectionApiService extends IntentService {
 
                     }
                 });
-            } else {
+            }
+            // returning optimized air pollution path considering the PM 2.5 index.
+            else {
                 Road nearestRoadofStart = getNearestRoad(fromLat, fromLng);   //yuan
                 Road nearestRoadofEnd = getNearestRoad(toLat, toLng);   //yuan
 
@@ -123,14 +136,13 @@ public class GetDirectionApiService extends IntentService {
                 waypoints = waypoints.substring(0, waypoints.length() - 1);
 
 
-                // 3.把必经的cross加入到waypoints里面
+                // add all selected nodes to the waypoints and then send the request
                 if (fromLat != 0.0 && fromLng != 0.0 && toLat != 0.0 && toLng != 0.0 && apiKey != null) {
                     Retrofit retrofit = new Retrofit.Builder().baseUrl("https://maps.googleapis.com")
                             .addConverterFactory(GsonConverterFactory.create()).build();
                     GetDirectionInterface apiService = retrofit.create(GetDirectionInterface.class);
                     Call<Directions> call = apiService.getDirections(origin, destination, apiKey, waypoints, "walking", false);
                     Log.d(TAG, "onHandleIntent: the waypoints are " + waypoints);
-//                Call<Directions> call = apiService.getDirections(origin, destination, apiKey,null, "walking", false);
                     call.enqueue(new Callback<Directions>() {
                         @Override
                         public void onResponse(Call<Directions> call, Response<Directions> response) {
@@ -152,16 +164,13 @@ public class GetDirectionApiService extends IntentService {
         }
     }
 
+
     @Override
     public void onDestroy() {
         super.onDestroy();
 
         BusProvider.getInstance().unregister(this);
     }
-
-
-
-
 
     /**
      * Read the cross csv which contains latlngs of crosses.

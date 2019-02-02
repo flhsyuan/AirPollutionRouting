@@ -1,6 +1,11 @@
-package airpollutionrouting.com.mapsexample;
+package airpollutionrouting.com.mapsexample.models;
 
-import com.google.android.gms.maps.model.LatLng;
+
+/**
+ * Created by Yuan on 17/01/2019.
+ *
+ * Modelling intersections of streets.
+ */
 
 public class Cross {
     private String id;

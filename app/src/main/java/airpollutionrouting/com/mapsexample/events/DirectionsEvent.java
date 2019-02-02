@@ -3,7 +3,7 @@ package airpollutionrouting.com.mapsexample.events;
 import airpollutionrouting.com.mapsexample.models.Directions;
 
 /**
- * Created by prem on 16/07/2017.
+ * Created by Yuan on 15/01/2019.
  */
 
 public class DirectionsEvent {

@@ -7,6 +7,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageButton;
 
+/**
+ * Created by Yuan on 20/01/2019.
+ *
+ * This activity is used to show the info of this APP(supervisor, designers and communities).
+ */
+
 public class MoreInfoActivity extends AppCompatActivity {
 
 

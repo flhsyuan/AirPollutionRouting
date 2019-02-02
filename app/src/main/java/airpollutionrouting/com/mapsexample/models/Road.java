@@ -1,9 +1,12 @@
-package airpollutionrouting.com.mapsexample;
-
-import okhttp3.internal.Util;
+package airpollutionrouting.com.mapsexample.models;
 
 import static airpollutionrouting.com.mapsexample.Utils.coordinatesToDistance;
 
+/**
+ * Created by Yuan on 16/01/2019.
+ *
+ * Modelling Roads.
+ */
 public class Road {
 
     private String fromCrossID;
@@ -16,7 +19,10 @@ public class Road {
     private Double distance;
 
 
-    public Road(String fromCrossID, String toCrossID, Double fromLat, Double fromLng, Double toLat, Double toLng, Double pollutionIndex) {
+    public Road(String fromCrossID, String toCrossID,
+                Double fromLat, Double fromLng,
+                Double toLat, Double toLng,
+                Double pollutionIndex) {
         this.fromCrossID = fromCrossID;
         ToCrossID = toCrossID;
         this.fromLat = fromLat;

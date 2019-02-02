@@ -19,6 +19,7 @@ import airpollutionrouting.com.mapsexample.models.Directions;
 
 
 /**
+ * created by Yuan on 26/01/2019.
  * A simple {@link Fragment} subclass.
  */
 public class DirectionsBottomSheet extends BottomSheetDialogFragment {
