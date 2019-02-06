@@ -69,6 +69,8 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import airpollutionrouting.com.mapsexample.events.AddressFetchedEvent;
 import airpollutionrouting.com.mapsexample.events.DirectionsEvent;
@@ -133,6 +135,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     String TAG = MapsActivity.class.getName();
 
+    public static ArrayList<Road> _allRoads = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -151,6 +155,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         BusProvider.getInstance().register(this);
 
+        _allRoads = readPollutionCSV();
     }
 
     private void setupUI() {
@@ -268,9 +273,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         }
 
-        ArrayList<Road> allRoads = readPollutionCSV();
-
-        for (Road road : allRoads) {
+        for (Road road : _allRoads) {
             int pollutionLevelColor;
             if (road.getPollutionIndex() < 2) {
                 pollutionLevelColor = Color.GREEN;
@@ -279,6 +282,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             } else {
                 pollutionLevelColor = Color.RED;
             }
+
 
             // prepare pollution line
             PolylineOptions options = new PolylineOptions()
@@ -289,10 +293,64 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             // add pollution line
             Polyline pollutionLine = _map.addPolyline(options);
-
             _pollutionLineList.add(pollutionLine);
         }
+
+        final Handler handler=new Handler();
+        Runnable runnable=new Runnable() {
+            @Override
+            public void run() {
+                //remove pollution line
+                if (_pollutionLineList != null) {
+                    for (Polyline line : _pollutionLineList) {
+                        line.remove();
+                    }
+                    _pollutionLineList.clear();
+                }
+
+                for (Road road : _allRoads){
+                    road.setPollutionIndex(road.getPollutionIndex()+(Math.random()-0.5)*2*5);
+                    if (road.getPollutionIndex()<0.01){
+                        road.setPollutionIndex(0.01);
+                    }
+                    if (road.getPollutionIndex()>8.0){
+                        road.setPollutionIndex(7.99);
+                    }
+                }
+
+
+                for (Road road : _allRoads) {
+                    int pollutionLevelColor;
+                    if (road.getPollutionIndex() < 2) {
+                        pollutionLevelColor = Color.GREEN;
+                    } else if (road.getPollutionIndex() < 5) {
+                        pollutionLevelColor = Color.YELLOW;
+                    } else {
+                        pollutionLevelColor = Color.RED;
+                    }
+
+
+                    // prepare pollution line
+                    PolylineOptions options = new PolylineOptions()
+                            .add(new LatLng(road.getFromLat(), road.getFromLng()), new LatLng(road.getToLat(), road.getToLng()))
+                            .width(20)
+                            .color(pollutionLevelColor)
+                            .geodesic(true).zIndex(-1);
+                    // add pollution line
+                    Polyline pollutionLine = _map.addPolyline(options);
+                    _pollutionLineList.add(pollutionLine);
+                }
+
+
+                handler.postDelayed(this, 30000);
+            }
+        };
+
+        handler.postDelayed(runnable, 30000);
+
+
     }
+
 
 
     /**
