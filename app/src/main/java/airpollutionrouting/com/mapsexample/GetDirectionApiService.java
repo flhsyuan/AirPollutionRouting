@@ -125,7 +125,7 @@ public class GetDirectionApiService extends IntentService {
                 Road nearestRoadofStart = getNearestRoad(fromLat, fromLng);   //yuan
                 Road nearestRoadofEnd = getNearestRoad(toLat, toLng);   //yuan
 
-                ArrayList<Road> allRoads = readPollutionCSV();
+                ArrayList<Road> allRoads = MapsActivity._allRoads;
                 ArrayList<String> pathList = new AStarSearch(allRoads).findpath(fromLat, fromLng, toLat, toLng, nearestRoadofStart, nearestRoadofEnd);
 
                 String waypoints = "";
