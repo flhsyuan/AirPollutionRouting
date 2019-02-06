@@ -98,13 +98,27 @@ public class GetDirectionApiService extends IntentService {
             String destination = toLat + ", " + toLng;
             Log.d(TAG, "origin =  " + origin + ", destination : " + destination + ", APIKey : " + apiKey);
 
+            Road nearestRoadofStart = getNearestRoad(fromLat, fromLng);   //yuan
+            Road nearestRoadofEnd = getNearestRoad(toLat, toLng);   //yuan
+
+            ArrayList<Road> allRoads = MapsActivity._allRoads;
+
             // Send requests according to the type of service.
             // "NORMAL" means returning nearest path without considering the air pollution index.
             if (mode.equals("NORMAL")) {
+                ArrayList<String> pathList = new AStarSearch(allRoads).findpath(fromLat, fromLng, toLat, toLng, nearestRoadofStart, nearestRoadofEnd,false);
+
+                String waypoints = "";
+                for (int i = 1; i < pathList.size() - 1; i++) {
+                    String waypoint = idToLatLng(pathList.get(i));
+                    waypoints += waypoint + "|";
+                }
+                waypoints = waypoints.substring(0, waypoints.length() - 1);
+
                 Retrofit retrofit = new Retrofit.Builder().baseUrl("https://maps.googleapis.com")
                         .addConverterFactory(GsonConverterFactory.create()).build();
                 GetDirectionInterface apiService = retrofit.create(GetDirectionInterface.class);
-                Call<Directions> call = apiService.getDirections(origin, destination, apiKey, null, "walking", false);
+                Call<Directions> call = apiService.getDirections(origin, destination, apiKey, waypoints, "walking", false);
                 call.enqueue(new Callback<Directions>() {
                     @Override
                     public void onResponse(Call<Directions> call, Response<Directions> response) {
@@ -122,11 +136,8 @@ public class GetDirectionApiService extends IntentService {
             }
             // returning optimized air pollution path considering the PM 2.5 index.
             else {
-                Road nearestRoadofStart = getNearestRoad(fromLat, fromLng);   //yuan
-                Road nearestRoadofEnd = getNearestRoad(toLat, toLng);   //yuan
 
-                ArrayList<Road> allRoads = MapsActivity._allRoads;
-                ArrayList<String> pathList = new AStarSearch(allRoads).findpath(fromLat, fromLng, toLat, toLng, nearestRoadofStart, nearestRoadofEnd);
+                ArrayList<String> pathList = new AStarSearch(allRoads).findpath(fromLat, fromLng, toLat, toLng, nearestRoadofStart, nearestRoadofEnd,true);
 
                 String waypoints = "";
                 for (int i = 1; i < pathList.size() - 1; i++) {
@@ -160,6 +171,8 @@ public class GetDirectionApiService extends IntentService {
                 } else {
                     Log.d(TAG, " some values are unexpected");
                 }
+
+
             }
         }
     }
@@ -260,7 +273,7 @@ public class GetDirectionApiService extends IntentService {
 
     public Road getNearestRoad(Double originLat, Double originLng){
         Road target = new Road();
-        ArrayList<Road> roads = readPollutionCSV();
+        ArrayList<Road> roads = MapsActivity._allRoads;
 
         Map<String,Double> map = new HashMap<>();
 

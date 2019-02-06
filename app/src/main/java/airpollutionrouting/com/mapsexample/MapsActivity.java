@@ -136,7 +136,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     String TAG = MapsActivity.class.getName();
 
+    //all roads in the map
     public static ArrayList<Road> _allRoads = new ArrayList<>();
+
+    // total pollution
+    private TextView _totalPollution;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,9 +198,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         _moreAirPollutionInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(_bottomAirPollutionSheetBehaviour.getState() == BottomSheetBehavior.STATE_HIDDEN){
-                    _bottomAirPollutionSheetBehaviour.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                _bottomAirPollutionSheetBehaviour.setState(BottomSheetBehavior.STATE_EXPANDED);
+                _bottomAirPollutionSheet.setVisibility(View.VISIBLE);
+
+                double totalPollution = 0.0;
+                for(Road road: AStarSearch.pathRoadList){
+                    totalPollution += road.getPollutionIndex() * road.getDistance();
                 }
+                String resultString = String.format("%.2f",totalPollution);
+                _totalPollution.setText(String.valueOf(resultString));
+
             }
         });
         _bottomAirPollutionSheet = findViewById(R.id.air_pollution_bottom_sheet);
@@ -213,6 +224,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         _routeLay.setOnClickListener(this);
         _airPollutionRouting.setOnClickListener(this);
         _normalRouting.setOnClickListener(this);
+
+        //air pollution detail sheet
+        _totalPollution = findViewById(R.id.total_pollution);
 
         //more info icon
         btn_icon = findViewById(R.id.more_info);
@@ -596,10 +610,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (_bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN) {
                     _bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 }
-            case R.id.more_pollution_info:
-                if(_bottomAirPollutionSheetBehaviour.getState() == BottomSheetBehavior.STATE_HIDDEN){
-                    _bottomAirPollutionSheetBehaviour.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                }
+                _bottomAirPollutionSheetBehaviour.setState(BottomSheetBehavior.STATE_HIDDEN);
         }
     }
 
@@ -777,6 +788,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 distanceOfAll += step.distance.value;  // yuan
 
                                 _bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                                _bottomAirPollutionSheetBehaviour.setState(BottomSheetBehavior.STATE_HIDDEN);
 
                                 Log.d(TAG, "Route : " + step.htmlInstructions);
                                 if (_adapter == null) {
@@ -895,6 +907,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 _bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
             _bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             _bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            return;
+        }
+
+        // close air pollution sheet if it is open
+        if (_bottomAirPollutionSheetBehaviour.getState() == BottomSheetBehavior.STATE_EXPANDED ||
+                _bottomAirPollutionSheetBehaviour.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+            _bottomAirPollutionSheetBehaviour.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            _bottomAirPollutionSheetBehaviour.setState(BottomSheetBehavior.STATE_HIDDEN);
             return;
         }
 

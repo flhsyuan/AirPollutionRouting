@@ -25,6 +25,10 @@ public class AStarSearch {
     private ArrayList<String> exploredNodes = new ArrayList<>();
     // Store all roads data.
     private ArrayList<Road> allRoads;
+    // Recording the father road of current node
+    private HashMap<String, Road> cameFromRoad = new HashMap<>();
+
+    public static ArrayList<Road> pathRoadList = new ArrayList<>();
 
     public AStarSearch(ArrayList<Road> allRoads){
         this.allRoads = allRoads;
@@ -42,7 +46,7 @@ public class AStarSearch {
      * @param endRoad
      * @return ArrayList<String> a list of nodes that having the optimized A value.
      */
-    public ArrayList<String> findpath(Double startLat,Double startLng,Double endLat,Double endLng,Road startRoad, Road endRoad){
+    public ArrayList<String> findpath(Double startLat,Double startLng,Double endLat,Double endLng,Road startRoad, Road endRoad,Boolean pollution){
 
         frontier.clear();
         costSoFar.clear();
@@ -63,19 +67,33 @@ public class AStarSearch {
 
             for (Road road: successors){
                 String successor;
+                Double successorLat;
+                Double successorLng;
                 if (road.getFromCrossID().equals(current)){
                     successor = road.getToCrossID();
+                    successorLat = road.getToLat();
+                    successorLng = road.getToLng();
                 }
                 else{
                     successor = road.getFromCrossID();
+                    successorLat = road.getFromLat();
+                    successorLng = road.getFromLng();
                 }
 
                 if (exploredNodes.contains(successor)) {
                     continue;
                 }
 
+                double cost;
+                double heuristic = 0;
+                if(pollution){
+                    cost = road.getDistance() * road.getPollutionIndex();
+                }
+                else{
+                    cost = road.getDistance();
+                    heuristic = Utils.coordinatesToDistance(successorLat,successorLng,endLat,endLng);
+                }
 
-                double cost = road.getDistance() * road.getPollutionIndex();
                 System.out.println(cost);
                 double newCost = costSoFar.get(current) + cost;
 
@@ -85,10 +103,12 @@ public class AStarSearch {
                     }
                 }
 
+
                 cameFrom.put(successor, current);
+                cameFromRoad.put(successor,road);
                 costSoFar.put(successor, newCost);
 
-                double heuristic = 0; //Dijkstra
+
                 double priority = newCost + heuristic;
                 frontier.put(successor, priority);
 
@@ -155,7 +175,16 @@ public class AStarSearch {
             path.add(current);
         }
         Collections.reverse(path);
+
+        pathRoadList.clear();
+        for(String node: path){
+            if(cameFromRoad.get(node)!=null){
+                pathRoadList.add(cameFromRoad.get(node));
+            }
+        }
+
         return path;
     }
+
 
 }
