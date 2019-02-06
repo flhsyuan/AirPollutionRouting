@@ -28,6 +28,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -116,6 +117,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private TextView btn_icon;
     private Drawable drawable;
 
+    //parameters of listener for location changes
+    private long UPDATE_INTERVAL = 10 * 1000;  /* 10 secs */
+    private long FASTEST_INTERVAL = 1500; /* 1.5 sec */
+    private final int MAX_TIME = 10; //
+    private int time;
+
+    //the current location
+    private double _currentLat, _currentLng; // yuan
+
+    //use current location button
+    private ImageButton _use_current_as_pickup;
 
     Marker _pickupMarker, _dropMarker;
 
@@ -180,18 +192,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //more info icon
         btn_icon = findViewById(R.id.more_info);
         drawable = getResources().getDrawable(R.drawable.ic_more_info);
-        drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
-        btn_icon.setCompoundDrawables(drawable,null,null,null);
+        drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
+        btn_icon.setCompoundDrawables(drawable, null, null, null);
         btn_icon.setText("More info");
         btn_icon.setTextSize(15);
         btn_icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MapsActivity.this,MoreInfoActivity.class);
+                Intent intent = new Intent(MapsActivity.this, MoreInfoActivity.class);
                 startActivity(intent);
             }
         });
 
+        //use current location button
+        _use_current_as_pickup = findViewById(R.id.use_current_location_pickup);
+        _use_current_as_pickup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(_pickupMarker!=null){
+                    _pickupMarker.remove();
+                }
+                getCurrentLatlng();
+                LatLng currentLatlng = new LatLng(_currentLat, _currentLng);
+                _pickupMarker = _map.addMarker(new MarkerOptions().position(currentLatlng)
+                        .title("Pickup")
+                        .icon(BitmapDescriptorFactory
+                                .fromBitmap(getSmallerSize(R.drawable.pickup))));
+
+                _txtEdtPickup.setText("Your Location");
+                moveMarker(currentLatlng.latitude, currentLatlng.longitude);
+                _pickupLatLng = currentLatlng;
+
+            }
+        });
 
     }
 
@@ -237,13 +270,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         ArrayList<Road> allRoads = readPollutionCSV();
 
-        for(Road road: allRoads){
+        for (Road road : allRoads) {
             int pollutionLevelColor;
-            if (road.getPollutionIndex()<2){
+            if (road.getPollutionIndex() < 2) {
                 pollutionLevelColor = Color.GREEN;
-            }else if(road.getPollutionIndex()<5){
+            } else if (road.getPollutionIndex() < 5) {
                 pollutionLevelColor = Color.YELLOW;
-            }else{
+            } else {
                 pollutionLevelColor = Color.RED;
             }
 
@@ -516,6 +549,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "Places search activity result");
 
+        //yuan
         if (requestCode == REQUEST_PICKUP_LOCATION || requestCode == REQUEST_DROP_LOCATION) {
             if (resultCode == RESULT_OK) {
                 // get place
@@ -578,7 +612,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         public void onClick(View view) {
                             removeAllPolylines();
                             GetDirectionApiService.getPossibleDirections(view.getContext(), _pickupLatLng, _dropLatLng,
-                                    getString(R.string.google_maps_key),"AIR");
+                                    getString(R.string.google_maps_key), "AIR");
                         }
                     });
 
@@ -589,7 +623,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         public void onClick(View view) {
                             removeAllPolylines();
                             GetDirectionApiService.getPossibleDirections(view.getContext(), _pickupLatLng, _dropLatLng,
-                                    getString(R.string.google_maps_key),"NORMAL");
+                                    getString(R.string.google_maps_key), "NORMAL");
 
 
                         }
@@ -608,6 +642,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } else {
             showNoRoutesFound();
         }
+
     }
 
     @Override
@@ -635,19 +670,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 if (route.legs.size() != 0) {
 
-                    Log.d(TAG, "onDirectionsFetched: the routes are "+ route.toString());
+                    Log.d(TAG, "onDirectionsFetched: the routes are " + route.toString());
 
                     LatLngBounds.Builder builder = new LatLngBounds.Builder();
                     builder.include(route.legs.get(0).steps.get(0).startLocation.getLatLng());
-                    builder.include(route.legs.get(route.legs.size()-1).steps.get(route.legs.get(route.legs.size()-1).steps.size()-1).endLocation.getLatLng());
+                    builder.include(route.legs.get(route.legs.size() - 1).steps.get(route.legs.get(route.legs.size() - 1).steps.size() - 1).endLocation.getLatLng());
                     LatLngBounds bounds = builder.build();
                     // create the camera with bounds and padding to set into map
                     CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, MAP_PADDING);
                     _map.animateCamera(cu);
 
                     List<Directions.Steps> steps = new ArrayList<>();
-                    int durationsOfAll =0;
-                    int distanceOfAll =0;
+                    int durationsOfAll = 0;
+                    int distanceOfAll = 0;
 
                     for (final Directions.Legs legs : route.legs) {
                         if (!Utils.isListEmpty(route.legs)) {
@@ -671,7 +706,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                                 List<LatLng> decodedPath = PolyUtil.decode(step.polyline.points);
-                                Log.d(TAG, "onDirectionsFetched: these are points: "+decodedPath.toString());
+                                Log.d(TAG, "onDirectionsFetched: these are points: " + decodedPath.toString());
 
 
                                 // prepare poly line
@@ -692,7 +727,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 _bottomSheet.setVisibility(View.VISIBLE);
 
                                 // showing route time and distance
-                                setDistanceAndTime(Utils.getKMs(distanceOfAll),Utils.getMinutes(durationsOfAll));
+                                setDistanceAndTime(Utils.getKMs(distanceOfAll), Utils.getMinutes(durationsOfAll));
 
                                 _map.setOnPolylineClickListener(new GoogleMap.OnPolylineClickListener() {
                                     @Override
@@ -838,7 +873,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 obj.setToLat(toLat);
                 obj.setToLng(toLng);
                 obj.setPollutionIndex(Double.valueOf(st.nextToken()));
-                obj.setDistance(Utils.coordinatesToDistance(fromLat,fromLng,toLat,toLng));
+                obj.setDistance(Utils.coordinatesToDistance(fromLat, fromLng, toLat, toLng));
                 roadArray.add(obj);
             }
         } catch (IOException e) {
@@ -847,5 +882,80 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return roadArray;
     }
 
+    /**
+     * get the latlng of the current location.
+     */
 
+    private void getCurrentLatlng() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(_googleApiClient);
+        int time;
+        String latitudeStr, longitudeStr;
+
+
+        if (null != lastLocation) {
+            _currentLat = lastLocation.getLatitude();
+            _currentLng = lastLocation.getLongitude();
+
+        } else {
+            regLocationUpdates();
+        }
+    }
+
+    /**
+     * If location information is not available, register for location change monitoring
+     */
+
+    private void regLocationUpdates() {
+        if (!isLocationPermissionGranted()) {
+            Log.d(TAG, "regLocationUpdates: the permission is not granted");
+            ;
+            return;
+        }
+        LocationRequest locationRequest = LocationRequest.create()
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                .setInterval(UPDATE_INTERVAL)
+                .setFastestInterval(FASTEST_INTERVAL);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        LocationServices.FusedLocationApi.requestLocationUpdates(_googleApiClient,
+                locationRequest, new LocationListener() {
+                    @Override
+                    public void onLocationChanged(Location location) {
+                        time++;
+                        //如果获取到位置信息，则移除位置变化监听
+                        if (null != location) {
+                            String latitudeStr, longitudeStr;
+                            LocationServices.FusedLocationApi.removeLocationUpdates(_googleApiClient, this);
+                            //获取定位的经纬度
+                            _currentLat = lastLocation.getLatitude();
+                            _currentLng = lastLocation.getLongitude();
+                            return;
+                        }
+                        //如果超过最大的定位次数则停止位置变化监听
+                        if (time == MAX_TIME) {
+                            //移除位置变化监听
+                            LocationServices.FusedLocationApi.removeLocationUpdates(_googleApiClient, this);
+                            //获取当前位置失败
+                        }
+                    }
+                });
+    }
 }

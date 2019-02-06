@@ -1,6 +1,7 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/apk/res-auto"
+    xmlns:tools2="http://schemas.android.com/tools"
     android:id="@+id/store_lay"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -44,7 +45,8 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
                     <ImageView
                         android:layout_width="20dp"
@@ -54,13 +56,13 @@
 
                     <android.support.design.widget.TextInputLayout
                         android:id="@+id/txt_input_pickup_location"
-                        android:layout_width="match_parent"
+                        android:layout_width="250dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp">
 
                         <android.support.design.widget.TextInputEditText
                             android:id="@+id/pickup_location"
-                            android:layout_width="match_parent"
+                            android:layout_width="250dp"
                             android:layout_height="match_parent"
                             android:background="@drawable/bg_curved_white"
                             android:focusable="false"
@@ -72,8 +74,28 @@
                             android:singleLine="true"
                             android:textColor="@color/txt_strong"
                             android:textSize="15sp" />
+
                     </android.support.design.widget.TextInputLayout>
+
+                    <!--<Button-->
+                        <!--android:id="@+id/use_current_location_pickup"-->
+                        <!--android:layout_width="50dp"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_marginVertical="7dp"-->
+                        <!--android:background="@android:color/white"-->
+                        <!--android:drawableLeft="@drawable/current_location"/>-->
+
+                    <ImageButton
+                        android:id="@+id/use_current_location_pickup"
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/white"
+                        android:src="@drawable/current_location"
+                        android:layout_gravity="center_vertical"
+                        />
+
                 </LinearLayout>
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -118,6 +140,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/card_view"
             android:layout_marginLeft="10dp"
+            android:layout_marginVertical="7dp"
             android:text="Air pollution routing"
             android:onClick="airOnClick"/>
 
@@ -127,8 +150,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/card_view"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
+            android:layout_toRightOf="@+id/air_pollution_routing_button"
+            android:layout_marginVertical="7dp"
+            android:layout_marginHorizontal="5dp"
             android:text="normal routing"
             android:layout_marginRight="10dp"
             android:onClick="normalOnclick"/>
