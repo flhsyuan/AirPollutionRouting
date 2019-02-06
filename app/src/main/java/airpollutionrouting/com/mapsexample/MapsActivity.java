@@ -102,10 +102,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Location lastLocation;
     private Handler _handler = new Handler();
     private LatLng _pickupLatLng, _dropLatLng;
-    private Button _airPollutionRouting, _normalRouting;
-    LinearLayout _bottomSheet;
+    private Button _airPollutionRouting, _normalRouting, _moreAirPollutionInfo;
+    LinearLayout _bottomSheet,_bottomAirPollutionSheet;
     RecyclerView _bottomSheetListView;
-    private BottomSheetBehavior _bottomSheetBehavior;
+    private BottomSheetBehavior _bottomSheetBehavior,_bottomAirPollutionSheetBehaviour;
+
     DirectionsBottomsheetAdapter _adapter;
     LinearLayout _routeLay;
     LinearLayout _routes;
@@ -186,6 +187,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         _bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         _bottomSheetBehavior.setHideable(false);
         _bottomSheetBehavior.setHideable(true);
+
+
+        //yuan the bottom air pollution sheet
+        _moreAirPollutionInfo = findViewById(R.id.more_pollution_info);
+        _moreAirPollutionInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(_bottomAirPollutionSheetBehaviour.getState() == BottomSheetBehavior.STATE_HIDDEN){
+                    _bottomAirPollutionSheetBehaviour.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                }
+            }
+        });
+        _bottomAirPollutionSheet = findViewById(R.id.air_pollution_bottom_sheet);
+        _bottomAirPollutionSheetBehaviour= BottomSheetBehavior.from(_bottomAirPollutionSheet);
+        _bottomAirPollutionSheetBehaviour.setState(BottomSheetBehavior.STATE_HIDDEN);
+        _bottomAirPollutionSheetBehaviour.setHideable(false);
+        _bottomAirPollutionSheetBehaviour.setHideable(true);
+
+
 
         //yuan set onclick listeners
         _txtEdtPickup.setOnClickListener(this);
@@ -575,6 +595,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             case R.id.route_lay:
                 if (_bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN) {
                     _bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                }
+            case R.id.more_pollution_info:
+                if(_bottomAirPollutionSheetBehaviour.getState() == BottomSheetBehavior.STATE_HIDDEN){
+                    _bottomAirPollutionSheetBehaviour.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 }
         }
     }
