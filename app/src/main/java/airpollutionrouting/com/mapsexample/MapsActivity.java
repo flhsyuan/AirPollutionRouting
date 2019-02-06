@@ -329,7 +329,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
 
                 for (Road road : _allRoads){
-                    road.setPollutionIndex(road.getPollutionIndex()+(Math.random()-0.5)*2*5);
+                    road.setPollutionIndex(road.getPollutionIndex()+(Math.random()-0.5)*2*3);
                     if (road.getPollutionIndex()<0.01){
                         road.setPollutionIndex(0.01);
                     }
@@ -366,7 +366,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         };
 
-        handler.postDelayed(runnable, 30000);
+        handler.postDelayed(runnable, 60000);
 
 
     }
