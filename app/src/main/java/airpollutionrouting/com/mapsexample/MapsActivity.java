@@ -956,9 +956,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return;
         }
         Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(_googleApiClient);
-        int time;
-        String latitudeStr, longitudeStr;
-
 
         if (null != lastLocation) {
             _currentLat = lastLocation.getLatitude();
@@ -998,20 +995,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     @Override
                     public void onLocationChanged(Location location) {
                         time++;
-                        //如果获取到位置信息，则移除位置变化监听
+                        
                         if (null != location) {
                             String latitudeStr, longitudeStr;
                             LocationServices.FusedLocationApi.removeLocationUpdates(_googleApiClient, this);
-                            //获取定位的经纬度
+
                             _currentLat = lastLocation.getLatitude();
                             _currentLng = lastLocation.getLongitude();
                             return;
                         }
-                        //如果超过最大的定位次数则停止位置变化监听
+
                         if (time == MAX_TIME) {
-                            //移除位置变化监听
+
                             LocationServices.FusedLocationApi.removeLocationUpdates(_googleApiClient, this);
-                            //获取当前位置失败
+
                         }
                     }
                 });
