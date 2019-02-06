@@ -85,7 +85,8 @@
                         android:layout_gravity="center_vertical"
                         android:background="@android:color/white"
                         android:src="@drawable/current_location"
-                        android:paddingLeft="18dp">
+                        android:paddingLeft="18dp"
+                        >
                     </ImageButton>
 
                 </LinearLayout>

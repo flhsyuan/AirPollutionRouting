@@ -937,7 +937,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     @Override
                     public void onLocationChanged(Location location) {
                         time++;
-                        
+
                         if (null != location) {
                             String latitudeStr, longitudeStr;
                             LocationServices.FusedLocationApi.removeLocationUpdates(_googleApiClient, this);
