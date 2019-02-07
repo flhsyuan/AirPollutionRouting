@@ -103,9 +103,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Handler _handler = new Handler();
     private LatLng _pickupLatLng, _dropLatLng;
     private Button _airPollutionRouting, _normalRouting, _moreAirPollutionInfo;
-    LinearLayout _bottomSheet,_bottomAirPollutionSheet;
+    LinearLayout _bottomSheet, _bottomAirPollutionSheet;
     RecyclerView _bottomSheetListView;
-    private BottomSheetBehavior _bottomSheetBehavior,_bottomAirPollutionSheetBehaviour;
+    private BottomSheetBehavior _bottomSheetBehavior, _bottomAirPollutionSheetBehaviour;
 
     DirectionsBottomsheetAdapter _adapter;
     LinearLayout _routeLay;
@@ -219,17 +219,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         redDistance += road.getDistance();
                     }
                 }
-                String resultString = String.format("%.2f",totalPollution);
+                String resultString = String.format("%.2f", totalPollution);
                 _totalPollution.setText(String.valueOf(resultString));
+                if (totalPollution <= 2) {
+                    _totalPollution.setTextColor(Color.GREEN);
+                }
+                if (totalPollution >= 2 && totalPollution <= 5) {
+                    _totalPollution.setTextColor(Color.YELLOW);
+                }
+                if (totalPollution > 5) {
+                    _totalPollution.setTextColor(Color.RED);
+                }
+
 
             }
         });
         _bottomAirPollutionSheet = findViewById(R.id.air_pollution_bottom_sheet);
-        _bottomAirPollutionSheetBehaviour= BottomSheetBehavior.from(_bottomAirPollutionSheet);
+        _bottomAirPollutionSheetBehaviour = BottomSheetBehavior.from(_bottomAirPollutionSheet);
         _bottomAirPollutionSheetBehaviour.setState(BottomSheetBehavior.STATE_HIDDEN);
         _bottomAirPollutionSheetBehaviour.setHideable(false);
         _bottomAirPollutionSheetBehaviour.setHideable(true);
-
 
 
         //yuan set onclick listeners
@@ -262,7 +271,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         _use_current_as_pickup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(_pickupMarker!=null){
+                if (_pickupMarker != null) {
                     _pickupMarker.remove();
                 }
                 getCurrentLatlng();
@@ -344,8 +353,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             _pollutionLineList.add(pollutionLine);
         }
 
-        final Handler handler=new Handler();
-        Runnable runnable=new Runnable() {
+        final Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 //remove pollution line
@@ -356,12 +365,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     _pollutionLineList.clear();
                 }
 
-                for (Road road : _allRoads){
-                    road.setPollutionIndex(road.getPollutionIndex()+(Math.random()-0.5)*2*3);
-                    if (road.getPollutionIndex()<0.01){
+                for (Road road : _allRoads) {
+                    road.setPollutionIndex(road.getPollutionIndex() + (Math.random() - 0.5) * 2 * 3);
+                    if (road.getPollutionIndex() < 0.01) {
                         road.setPollutionIndex(0.01);
                     }
-                    if (road.getPollutionIndex()>8.0){
+                    if (road.getPollutionIndex() > 8.0) {
                         road.setPollutionIndex(7.99);
                     }
                 }
@@ -398,7 +407,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     }
-
 
 
     /**
@@ -553,7 +561,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.d(TAG, "Address is null");
             Toast.makeText(this, getString(R.string.address_not_found), Toast.LENGTH_SHORT).show();
         }
-
     }
 
 
@@ -860,6 +867,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 } else showNoRoutesFound();
             }
         } else showNoRoutesFound();
+
+        //yuan: remove the mylocation button.
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        _map.setMyLocationEnabled(false);
     }
 
     /**
