@@ -24,7 +24,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="The color: "/>
+                android:text="  The color: "/>
 
             <ImageView
                 android:layout_marginLeft="5dp"
@@ -37,7 +37,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:textSize="15dp"
-                android:text=" means PM2.5 Value is lower than 2."/>
+                android:text=" means PM2.5 is lower than 2."/>
         </LinearLayout>
 
         <LinearLayout
@@ -90,7 +90,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="The color: "/>
+                android:text="  The color: "/>
 
             <ImageView
                 android:layout_marginLeft="5dp"
@@ -103,7 +103,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:textSize="15dp"
-                android:text=" means PM2.5 Value is between 2 and 5."/>
+                android:text=" means PM2.5 is between 2 and 5."/>
         </LinearLayout>
 
         <LinearLayout
@@ -156,7 +156,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="The color: "/>
+                android:text="  The color: "/>
 
             <ImageView
                 android:layout_marginLeft="5dp"
@@ -169,7 +169,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:textSize="15dp"
-                android:text=" means PM2.5 Value is higher than 5."/>
+                android:text=" means PM2.5 is higher than 5."/>
         </LinearLayout>
 
 
@@ -223,7 +223,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="15dp"
-                android:text="The total pollution (pm2.5 * km) is :"/>
+                android:text="  The total pollution (pm2.5 * km) is :"/>
 
             <TextView
                 android:layout_marginLeft="3dp"
@@ -231,6 +231,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:textSize="15dp"
+                android:textStyle="bold"
                 android:text=""/>
         </LinearLayout>
 
