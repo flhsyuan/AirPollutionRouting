@@ -141,6 +141,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     // total pollution
     private TextView _totalPollution;
+    private TextView _totalGreen;
+    private TextView _totalYellow;
+    private TextView _totalRed;
 
     //const
     public double GREEN_UPPER_BOUND = 2.0;
@@ -219,17 +222,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         redDistance += road.getDistance();
                     }
                 }
-                String resultString = String.format("%.2f", totalPollution);
-                _totalPollution.setText(String.valueOf(resultString));
-                if (totalPollution <= 2) {
-                    _totalPollution.setTextColor(Color.GREEN);
-                }
-                if (totalPollution >= 2 && totalPollution <= 5) {
-                    _totalPollution.setTextColor(Color.YELLOW);
-                }
-                if (totalPollution > 5) {
-                    _totalPollution.setTextColor(Color.RED);
-                }
+                String totalPollutionString = String.format("%.2f", totalPollution);
+                _totalPollution.setText(String.valueOf(totalPollutionString));
+
+                String totalGreenString = String.format("%.2f", greenDistance);
+                _totalGreen.setText(String.valueOf(totalGreenString));
+
+                String totalYellowString = String.format("%.2f", yellowDistance);
+                _totalYellow.setText(String.valueOf(totalYellowString));
+
+                String totalRedString = String.format("%.2f", redDistance);
+                _totalRed.setText(String.valueOf(totalRedString));
+
+
 
 
             }
@@ -250,6 +255,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //air pollution detail sheet
         _totalPollution = findViewById(R.id.total_pollution);
+        _totalGreen = findViewById(R.id.total_green_length);
+        _totalYellow = findViewById(R.id.total_yellow_length);
+        _totalRed = findViewById(R.id.total_red_length);
 
         //more info icon
         btn_icon = findViewById(R.id.more_info);
