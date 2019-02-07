@@ -142,6 +142,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // total pollution
     private TextView _totalPollution;
 
+    //const
+    public double GREEN_UPPER_BOUND = 2.0;
+    public double YELLOW_UPPER_BOUND = 5.0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -202,8 +206,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 _bottomAirPollutionSheet.setVisibility(View.VISIBLE);
 
                 double totalPollution = 0.0;
+                double greenDistance = 0.0;
+                double yellowDistance = 0.0;
+                double redDistance = 0.0;
                 for(Road road: AStarSearch.pathRoadList){
                     totalPollution += road.getPollutionIndex() * road.getDistance();
+                    if (road.getPollutionIndex() < GREEN_UPPER_BOUND) {
+                        greenDistance += road.getDistance();
+                    } else if (road.getPollutionIndex() < YELLOW_UPPER_BOUND) {
+                        yellowDistance += road.getDistance();
+                    } else {
+                        redDistance += road.getDistance();
+                    }
                 }
                 String resultString = String.format("%.2f",totalPollution);
                 _totalPollution.setText(String.valueOf(resultString));
@@ -309,9 +323,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         for (Road road : _allRoads) {
             int pollutionLevelColor;
-            if (road.getPollutionIndex() < 2) {
+            if (road.getPollutionIndex() < GREEN_UPPER_BOUND) {
                 pollutionLevelColor = Color.GREEN;
-            } else if (road.getPollutionIndex() < 5) {
+            } else if (road.getPollutionIndex() < YELLOW_UPPER_BOUND) {
                 pollutionLevelColor = Color.YELLOW;
             } else {
                 pollutionLevelColor = Color.RED;
@@ -355,9 +369,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 for (Road road : _allRoads) {
                     int pollutionLevelColor;
-                    if (road.getPollutionIndex() < 2) {
+                    if (road.getPollutionIndex() < GREEN_UPPER_BOUND) {
                         pollutionLevelColor = Color.GREEN;
-                    } else if (road.getPollutionIndex() < 5) {
+                    } else if (road.getPollutionIndex() < YELLOW_UPPER_BOUND) {
                         pollutionLevelColor = Color.YELLOW;
                     } else {
                         pollutionLevelColor = Color.RED;
