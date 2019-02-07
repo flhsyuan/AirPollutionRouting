@@ -34,10 +34,10 @@
             android:id="@+id/card_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="12dp"
+            android:layout_margin="5dp"
             android:elevation="3dp"
             app:cardCornerRadius="3dp"
-            app:contentPadding="8dp"
+            app:contentPadding="08dp"
             android:layout_below="@+id/title_layout">
 
             <LinearLayout
@@ -137,7 +137,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/card_view"
             android:layout_marginLeft="10dp"
-            android:layout_marginVertical="7dp"
+
             android:text="Air pollution routing"
             android:onClick="airOnClick"/>
 
@@ -148,7 +148,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/card_view"
             android:layout_toRightOf="@+id/air_pollution_routing_button"
-            android:layout_marginVertical="7dp"
+
             android:layout_marginHorizontal="5dp"
             android:text="normal routing"
             android:layout_marginRight="10dp"
