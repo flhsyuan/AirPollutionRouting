@@ -4,6 +4,7 @@ package airpollutionrouting.com.mapsexample;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -27,10 +28,14 @@ public class AircastingActivity extends AppCompatActivity{
         webView1 = (WebView) findViewById(R.id.web_view);
         webView1.getSettings().setJavaScriptEnabled(true);
         webView1.setWebViewClient(new WebViewClient());
-
         webView1.loadUrl(url);
+
         webView1.getSettings().setUseWideViewPort(true);
         webView1.getSettings().setLoadWithOverviewMode(true);
         webView1.getSettings().setBuiltInZoomControls(true);
+        webView1.getSettings().setLoadWithOverviewMode(true);
+
     }
+
+
 }

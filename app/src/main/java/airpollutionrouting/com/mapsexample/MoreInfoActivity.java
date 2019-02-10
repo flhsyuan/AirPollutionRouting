@@ -26,7 +26,7 @@ public class MoreInfoActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MoreInfoActivity.this,AircastingActivity.class);
-                String url = "http://www.aircasting.org/";
+                String url = "http://aircasting.aurin.org.au";
                 intent.putExtra("url", url);
                 startActivity(intent);
             }
