@@ -17,9 +17,9 @@ public class AStarSearch {
 
     // All nodes can be expanded.
     private HashMap<String, Double> frontier = new HashMap<>();
-    // Reccording the current cost.
+    // Recording the cost for each node.
     private HashMap<String, Double> costSoFar = new HashMap<>();
-    // Recording the father node of current node
+    // Recording the parent node of current node
     private HashMap<String, String> cameFrom = new HashMap<>();
     // Recording all visited nodes.
     private ArrayList<String> exploredNodes = new ArrayList<>();
@@ -87,27 +87,23 @@ public class AStarSearch {
                 double cost;
                 double heuristic = 0;
                 if(pollution){
+                    //air pollution routing
                     cost = road.getDistance() * road.getPollutionIndex();
                 }
                 else{
+                    //normal routing
                     cost = road.getDistance();
                     heuristic = Utils.coordinatesToDistance(successorLat,successorLng,endLat,endLng);
                 }
-
-                System.out.println(cost);
                 double newCost = costSoFar.get(current) + cost;
-
                 if(costSoFar.containsKey(successor)){
                     if (newCost >= costSoFar.get(successor)){
                         continue;
                     }
                 }
-
-
                 cameFrom.put(successor, current);
                 cameFromRoad.put(successor,road);
                 costSoFar.put(successor, newCost);
-
 
                 double priority = newCost + heuristic;
                 frontier.put(successor, priority);
