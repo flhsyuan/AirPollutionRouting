@@ -11,7 +11,3 @@
 
 ---------------------------------------------
 ### Related links: 
-The demonstration video of “Air pollution Routing” is available at:
-https://youtu.be/egHFWthuRdc
-
-The Android APK of "Air Pollution Routing" is available at:
