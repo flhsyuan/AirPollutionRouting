@@ -14,3 +14,5 @@ You can test this App by mounting the APK file in this repository(see the relate
 The demonstration video of “Air pollution Routing” is available at:https://youtu.be/egHFWthuRdc
 
 The Android APK of "Air Pollution Routing" is available at:https://github.com/flhsyuan/AirPollutionRouting/blob/master/app-debug.apk
+
+The raw data of air pollution in melbourne CBD is available at:https://github.com/flhsyuan/AirPollutionRouting/blob/master/Melbourne%20City%20PM2.5.xlsx
